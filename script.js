@@ -142,16 +142,16 @@ async function previewData() {
     // Merge each Excel row with the full JSON row structure
     mergedData = firstFileData.map(excelRow => {
         const npci_mfilterit = [
-            excelRow?.mfilteritUrl,
-            excelRow?.npciUrl
+            excelRow?.mfilterit_url,
+            excelRow?.npci_url
         ].filter(Boolean).join(',');
 
-        const upiHandle = excelRow?.upiVpa && String(excelRow.upiVpa).includes('@')
-            ? String(excelRow.upiVpa).split('@')[1].toLowerCase()
+        const upiHandle = excelRow?.upi_vpa && String(excelRow.upi_vpa).includes('@')
+            ? String(excelRow.upi_vpa).split('@')[1].toLowerCase()
             : 'NA';
 
-        const ifscCode = excelRow?.ifscCode && excelRow.ifscCode !== 'NA'
-            ? excelRow.ifscCode.trim().substring(0, 4).toUpperCase()
+        const ifscCode = excelRow?.ifsc_code && excelRow.ifsc_code !== 'NA'
+            ? excelRow.ifsc_code.trim().substring(0, 4).toUpperCase()
             : null;
 
         let bankName = "NA";
@@ -165,32 +165,32 @@ async function previewData() {
             bankName = handleToBankMap[upiHandle];
         }
 
-        const websiteDomain = excelRow?.UPIURLs ? extractDomain(excelRow.UPIURLs) : 'NA';
+        const websiteDomain = excelRow?.payment_gateway_url ? extractDomain(excelRow.payment_gateway_url) : 'NA';
 
-        const upiType = determineType(excelRow?.upiVpa);
+        const upiType = determineType(excelRow?.upi_vpa);
 
         // Extract the timestamp from the URL and convert it to a date
-        const timestamp = extractTimestampFromUrl(excelRow?.npciUrl); // Adjust the column name as needed
+        const timestamp = extractTimestampFromUrl(excelRow?.npci_url); // Adjust the column name as needed
         const date = convertTimestampToDate(timestamp)
 
         const dateTime = convertToDateTime(timestamp);
 
-        const origin = excelRow?.WebsiteURL ? originWebsiteMap[excelRow.WebsiteURL] : 'NA';
+        const origin = excelRow?.website_url ? originWebsiteMap[excelRow.website_url] : 'NA';
 
-        const category = excelRow?.WebsiteURL ? categoryWebsiteMap[excelRow.WebsiteURL] : 'NA';
+        const category = excelRow?.website_url ? categoryWebsiteMap[excelRow.website_url] : 'NA';
 
 
         return {
             ...secondFileData.sheet1Data[0], // Start with the full JSON structure as the base,
-            bank_account_number: excelRow?.BankAccountNumber || secondFileData.sheet1Data[0].bank_account_number,
-            ifsc_code: excelRow?.ifscCode || secondFileData.sheet1Data[0].ifsc_code,
-            upi_vpa: excelRow?.upiVpa || secondFileData.sheet1Data[0].upi_vpa,
-            ac_holder_name: excelRow?.acHolderName || secondFileData.sheet1Data[0].ac_holder_name,
-            website_url: excelRow?.WebsiteURL || secondFileData.sheet1Data[0].website_url,
-            payment_gateway_intermediate_url: excelRow?.UPIURLs || secondFileData.sheet1Data[0].payment_gateway_intermediate_url,
-            payment_gateway_url: excelRow?.UPIURLs || secondFileData.sheet1Data[0].payment_gateway_url,
-            upi_url: excelRow?.UPIURLs || secondFileData.sheet1Data[0].upi_url,
-            transaction_method: excelRow?.Method || secondFileData.sheet1Data[0].transaction_method,
+            bank_account_number: excelRow?.bank_account_number || secondFileData.sheet1Data[0].bank_account_number, // Account Number
+            ifsc_code: excelRow?.ifsc_code || secondFileData.sheet1Data[0].ifsc_code, //IFSC Code
+            upi_vpa: excelRow?.upi_vpa || secondFileData.sheet1Data[0].upi_vpa, // upi id
+            ac_holder_name: excelRow?.account_holder_name || secondFileData.sheet1Data[0].ac_holder_name, //account holder name
+            website_url: excelRow?.website_url || secondFileData.sheet1Data[0].website_url, //website url
+            payment_gateway_intermediate_url: excelRow?.payment_gateway_url || secondFileData.sheet1Data[0].payment_gateway_intermediate_url, //payment gateway url
+            payment_gateway_url: excelRow?.payment_gateway_url || secondFileData.sheet1Data[0].payment_gateway_url, //payment gateway url
+            upi_url: excelRow?.payment_gateway_url || secondFileData.sheet1Data[0].upi_url, //payment gateway url
+            transaction_method: excelRow?.transaction_method || secondFileData.sheet1Data[0].transaction_method, // Transaction Method
             screenshot: npci_mfilterit,
             screenshot_case_report_link: npci_mfilterit,
             handle: upiHandle,
