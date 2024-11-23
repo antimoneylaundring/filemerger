@@ -10,8 +10,18 @@ let categoryWebsiteMap = {};
 
 async function loadStaticJson() {
     // Load the static JSON file only once
-    let secondFile = await fetch('json/secondFile.json');
-    secondFileData = await secondFile.json();
+    const mergeType = document.getElementById('mergeTypeDropdown').value;
+
+    let jsonFilePath = '';
+    if (mergeType === 'upi' || mergeType === 'credit_netbanking') {
+        jsonFilePath = 'json/secondFile.json'; // JSON for UPI
+    } else if (mergeType === 'telegram') {
+        jsonFilePath = 'json/telegram_wtsp.json'; // JSON for Telegram
+    }
+
+    // Load the selected JSON file
+    const selectedJsonFile = await fetch(jsonFilePath);
+    secondFileData = await selectedJsonFile.json();
 
     const handleBankFile = await fetch('json/handleBankName.json');
     const handleFileData = await handleBankFile.json();
@@ -39,14 +49,14 @@ async function loadStaticJson() {
     })
 
     origin.Sheet1.forEach(item => {
-        if(item.URL && item.Origin){
-            originWebsiteMap[item.URL] = item.Origin;
+        if (item.url && item.origin) {
+            originWebsiteMap[item.url] = item.origin;
         }
     })
 
     category.Sheet1.forEach(item => {
-        if(item.URL  && item.Category){
-            categoryWebsiteMap[item.URL] = item.Category;
+        if (item.url && item.Category) {
+            categoryWebsiteMap[item.url] = item.Category;
         }
     })
 
@@ -56,7 +66,7 @@ async function loadStaticJson() {
     const sheet4Data = origin.sheet1;
     const sheet5Data = category.sheet1;
 
-    secondFileData = { sheet1Data, sheet2Data, sheet3Data, sheet4Data, sheet5Data};
+    secondFileData = { sheet1Data, sheet2Data, sheet3Data, sheet4Data, sheet5Data };
 
     return secondFileData;
 }
@@ -119,6 +129,21 @@ function convertTimestampToDate(timestamp) {
     return 'Invalid Timestamp'; // Return this if the timestamp is not valid
 }
 
+function determinePlatform(url) {
+    if (url.includes('wa')) {
+        return 'WhatsApp';
+    } else if (url.includes('telegram')) {
+        return 'Telegram';
+    } else if (url.includes('t.me')) {
+        return 'Telegram';
+    } else if (url.includes('instagram')) {
+        return 'Instagram';
+    } else if (url.includes('facebook')) {
+        return 'Facebook';
+    }
+    return 'NA';
+}
+
 function convertToDateTime(npciNumber) {
     if (npciNumber) {
         const date = new Date(0); // Start with Unix epoch (1970-01-01)
@@ -130,7 +155,6 @@ function convertToDateTime(npciNumber) {
     } // Convert string to number
 }
 
-
 async function previewData() {
     if (firstFileData.length === 0 || secondFileData.length === 0) {
         alert('Please upload the first file and ensure the JSON file is loaded.');
@@ -141,33 +165,46 @@ async function previewData() {
 
     // Merge each Excel row with the full JSON row structure
     mergedData = firstFileData.map(excelRow => {
-        const npci_mfilterit = [
-            excelRow?.mfilterit_url,
-            excelRow?.npci_url
-        ].filter(Boolean).join(',');
 
-        const upiHandle = excelRow?.upi_vpa && String(excelRow.upi_vpa).includes('@')
-            ? String(excelRow.upi_vpa).split('@')[1].toLowerCase()
-            : 'NA';
+        const mergeType = document.getElementById('mergeTypeDropdown').value;
 
-        const ifscCode = excelRow?.ifsc_code && excelRow.ifsc_code !== 'NA'
-            ? excelRow.ifsc_code.trim().substring(0, 4).toUpperCase()
-            : null;
+        const npciUrl = excelRow?.npci_url ? excelRow.npci_url : '';
+        const mfilteritUrl = npciUrl.replace('npci', 'mfilterit');
+
+        const npci_mfilterit = [mfilteritUrl, npciUrl].filter(Boolean).join(',');
 
         let bankName = "NA";
 
-        // Prioritize IFSC-based bank lookup if IFSC code exists
-        if (ifscCode && ifscToBankMap[ifscCode]) {
-            bankName = ifscToBankMap[ifscCode];
-        }
-        // Fallback to UPI handle-based lookup if no valid IFSC code
-        else if (upiHandle && handleToBankMap[upiHandle]) {
-            bankName = handleToBankMap[upiHandle];
+        let upiHandle = 'NA';
+        let ifscCode = 'NA';
+
+        if (mergeType === 'upi' || mergeType === 'telegram') {
+            upiHandle = excelRow?.upi_vpa && String(excelRow.upi_vpa).includes('@')
+                ? String(excelRow.upi_vpa).split('@')[1].toLowerCase()
+                : 'NA';
+
+            // Extract IFSC code
+            ifscCode = excelRow?.ifsc_code && excelRow.ifsc_code !== 'NA'
+                ? excelRow.ifsc_code.trim().substring(0, 4).toUpperCase()
+                : null;
+
+            // Prioritize IFSC-based bank lookup if IFSC code exists
+            if (ifscCode && ifscToBankMap[ifscCode]) {
+                bankName = ifscToBankMap[ifscCode];
+            }
+            // Fallback to UPI handle-based lookup if no valid IFSC code
+            else if (upiHandle && handleToBankMap[upiHandle]) {
+                bankName = handleToBankMap[upiHandle];
+            }
+        } else if (mergeType === 'credit_netbanking') {
+            bankName = excelRow?.bank_name || '';
         }
 
-        const websiteDomain = excelRow?.payment_gateway_url ? extractDomain(excelRow.payment_gateway_url) : 'NA';
-
-        const upiType = determineType(excelRow?.upi_vpa);
+        const upiType = mergeType === 'upi' || mergeType === 'telegram'
+            ? determineType(excelRow?.upi_vpa || '')
+            : mergeType === 'credit_netbanking'
+                ? excelRow?.platform
+                : 'NA';
 
         // Extract the timestamp from the URL and convert it to a date
         const timestamp = extractTimestampFromUrl(excelRow?.npci_url); // Adjust the column name as needed
@@ -175,38 +212,112 @@ async function previewData() {
 
         const dateTime = convertToDateTime(timestamp);
 
-        const origin = excelRow?.website_url ? originWebsiteMap[excelRow.website_url] : 'NA';
+        const origin = mergeType === 'upi' || mergeType === 'credit_netbanking' && excelRow?.website_url
+            ? originWebsiteMap[excelRow.website_url]
+            : 'INDIA';
 
-        const category = excelRow?.website_url ? categoryWebsiteMap[excelRow.website_url] : 'NA';
+        const category = mergeType === 'upi' || mergeType === 'credit_netbanking'
+            ? (excelRow?.website_url ? categoryWebsiteMap[excelRow.website_url] : 'NA') // UPI ke liye JSON logic
+            : excelRow?.category || 'NA';
 
+
+        const platform = mergeType === 'telegram'
+            ? determinePlatform(excelRow?.website_url || '') // Check platform for Telegram
+            : mergeType === 'credit_netbanking'
+                ? excelRow?.platform
+                : 'NA';
+
+        const paymentUrl = mergeType === 'upi'
+            ? (excelRow?.payment_gateway_url || '')
+            : mergeType === 'credit_netbanking'
+                ? (excelRow?.destination_url || '')
+                : "NA";
+
+
+        const upiUrl = mergeType === 'upi'
+            ? (excelRow?.payment_gateway_url || '')
+            : "NA";
+
+        const intermediateUrl1 = excelRow?.intermediate_url_1 ? excelRow?.intermediate_url_1 : '';
+        const intermediateUrl2 = excelRow?.intermediate_url_2 ? excelRow?.intermediate_url_2 : '';
+        const intermediateUrl3 = excelRow?.intermediate_url_3 ? excelRow?.intermediate_url_3 : '';
+        const intermediateUrl4 = excelRow?.intermediate_url_4 ? excelRow?.intermediate_url_4 : '';
+
+        const intermediateUrls = mergeType === 'upi'
+            ? (excelRow?.payment_gateway_url || '')
+            : mergeType === 'credit_netbanking'
+                ? [intermediateUrl1, intermediateUrl2, intermediateUrl3, intermediateUrl4]
+                    .filter(Boolean) // Remove empty or null values
+                    .join(',') // Join domains with commas
+                : 'NA';
+
+        const intermediateDomainName =
+            mergeType === 'credit_netbanking'
+                ? [intermediateUrl1, intermediateUrl2, intermediateUrl3, intermediateUrl4]
+                    .filter(Boolean) // Remove empty or null values
+                    .map(extractDomain) // Extract domain from each URL
+                    .join(',') // Join domains with commas
+                : '';
+
+        const paymentIntermediateUrls = mergeType === 'upi'
+            ? extractDomain(excelRow?.payment_gateway_url || '')
+            : mergeType === 'credit_netbanking'
+                ? intermediateDomainName
+                : 'NA';
+
+        const bankAccountNumber = mergeType === 'upi' || mergeType === 'telegram'
+            ? excelRow?.bank_account_number || ''
+            : mergeType === 'credit_netbanking'
+                ? 'NA'
+                : 'NA';
+
+        const ifsc = mergeType === 'upi'
+            ? excelRow?.ifsc_code || ''
+            : mergeType === 'credit_netbanking'
+                ? 'NA'
+                : 'NA';
+
+        const upiId = mergeType === 'upi' || mergeType === 'telegram'
+            ? excelRow?.upi_vpa || ''
+            : mergeType === 'credit_netbanking'
+                ? 'NA'
+                : 'NA';
+
+        const accHolderName = mergeType === 'upi' || mergeType === 'telegram'
+            ? excelRow?.account_holder_name
+            : mergeType === "credit_netbanking"
+                ? excelRow?.account_holder_name
+                    ? excelRow?.account_holder_name
+                    : "NA"
+                : 'NA';
 
         return {
             ...secondFileData.sheet1Data[0], // Start with the full JSON structure as the base,
-            bank_account_number: excelRow?.bank_account_number || secondFileData.sheet1Data[0].bank_account_number, // Account Number
-            ifsc_code: excelRow?.ifsc_code || secondFileData.sheet1Data[0].ifsc_code, //IFSC Code
-            upi_vpa: excelRow?.upi_vpa || secondFileData.sheet1Data[0].upi_vpa, // upi id
-            ac_holder_name: excelRow?.account_holder_name || secondFileData.sheet1Data[0].ac_holder_name, //account holder name
+            bank_account_number: bankAccountNumber, // Account Number
+            ifsc_code: ifsc, //IFSC Code
+            upi_vpa: upiId, // upi id
+            ac_holder_name: accHolderName, //account holder name
             website_url: excelRow?.website_url || secondFileData.sheet1Data[0].website_url, //website url
-            payment_gateway_intermediate_url: excelRow?.payment_gateway_url || secondFileData.sheet1Data[0].payment_gateway_intermediate_url, //payment gateway url
-            payment_gateway_url: excelRow?.payment_gateway_url || secondFileData.sheet1Data[0].payment_gateway_url, //payment gateway url
-            upi_url: excelRow?.payment_gateway_url || secondFileData.sheet1Data[0].upi_url, //payment gateway url
+            payment_gateway_intermediate_url: intermediateUrls, //payment gateway url
+            payment_gateway_url: paymentUrl, //payment gateway url
+            upi_url: upiUrl,
             transaction_method: excelRow?.transaction_method || secondFileData.sheet1Data[0].transaction_method, // Transaction Method
             screenshot: npci_mfilterit,
             screenshot_case_report_link: npci_mfilterit,
             handle: upiHandle,
-            payment_gateway_name: websiteDomain,
+            payment_gateway_name: paymentIntermediateUrls,
             upi_bank_account_wallet: upiType,
             inserted_date: date,
             case_generated_time: dateTime,
             bank_name: bankName,
             origin: origin,
-            category_of_website: category
+            category_of_website: category,
+            platform: platform
         };
     });
 
     displayPreview(mergedData);
 }
-
 
 function displayPreview(data) {
     const container = document.getElementById("previewContainer");
@@ -244,15 +355,25 @@ function displayPreview(data) {
 }
 
 function downloadUpdatedFile() {
-    const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(mergedData);
-    XLSX.utils.book_append_sheet(wb, ws, 'MergedData');
-    XLSX.writeFile(wb, 'MergedFile.xlsx');
+    const csvData = XLSX.utils.sheet_to_csv(ws); // Convert worksheet to CSV format
+
+    // Create a Blob from the CSV data
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+
+    // Create a download link
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'MergedFile.csv'; // Set the file name
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
     setTimeout(() => {
         location.reload(); // Reload the page after a slight delay
     }, 500);
 }
+
 
 // Load the static JSON once when the page loads
 loadStaticJson();

@@ -17,6 +17,15 @@
                     <label for="avatar">Choose First File:</label>
                     <input type="file" id="uploadFirstFile" accept=".xlsx, .xls" />
                 </div>
+                <div>
+                    <label for="">File Format</label>
+                    <select name="fileFormat" id="mergeTypeDropdown">
+                        <option value="upi">UPI/Bank/Wallet</option>
+                        <option value="telegram">Telegram/Whatsapp</option>
+                        <option value="credit_netbanking">Credit Card/Netbanking</option>
+                        <!-- <option value="netbanking">Netbanking</option> -->
+                    </select>
+                </div>
                 <Button class="preview-btn btn" id="mergeBtn" onclick="previewData()">Merge & Preview Data</Button>
                 <Button class="merge-btn btn" id="download" onclick="downloadUpdatedFile()">Download</Button>
             </div>
@@ -27,8 +36,48 @@
             </div>
         </div>
     </div>
-    
+
     <script src="script.js"></script>
+    <script>
+        const predefinedHeaders = {
+            upi: ['bank_account_number', 'ifsc_code', 'upi_vpa', 'account_holder_name', 'npci_url', 'website_url', 'payment_gateway_url', 'transaction_method'],
+            telegram: ['upi_vpa', 'account_holder_name', 'bank_account_number', 'ifsc_code', 'website_url', 'npci_url', 'category'],
+            credit_netbanking: ['website_url', 'intermediate_url_1', 'intermediate_url_2', 'intermediate_url_3', 'intermediate_url_4', 'transaction_method', 'npci_url', 'platform', 'account_holder_name', 'bank_name']
+        };
+
+        function showHeaders() {
+            const mergeType = document.getElementById("mergeTypeDropdown").value;
+            const headers = predefinedHeaders[mergeType] || []; // Get headers based on merge type
+
+            const container = document.getElementById("previewContainer");
+            container.innerHTML = ""; // Clear existing content
+
+            const table = document.createElement("table");
+            table.style.borderCollapse = "collapse";
+            table.style.width = "100%";
+
+            const headerRow = document.createElement("tr");
+
+            // Create table headers
+            headers.forEach(header => {
+                const th = document.createElement("th");
+                th.textContent = header;
+                th.style.border = "1px solid black";
+                th.style.padding = "8px";
+                headerRow.appendChild(th);
+            });
+
+            table.appendChild(headerRow);
+            container.appendChild(table);
+        }
+
+        // Add event listener to dropdown
+        document.getElementById("mergeTypeDropdown").addEventListener("change", showHeaders);
+
+        // Show default headers on page load
+        window.onload = showHeaders;
+    </script>
+
 </body>
 
 </html>
