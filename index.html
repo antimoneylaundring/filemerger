@@ -27,6 +27,7 @@
                     </select>
                 </div>
                 <div class="btn-container">
+                    <Button class="preview-btn btn" id="download" onclick="downloadHeader()">Download Header</Button>
                     <Button class="preview-btn btn" id="mergeBtn" onclick="previewData()">Merge & Preview Data</Button>
                     <Button class="merge-btn btn" id="download" onclick="downloadUpdatedFile()">Download</Button>
                 </div>
@@ -78,6 +79,29 @@
 
         // Show default headers on page load
         window.onload = showHeaders;
+
+        function downloadHeader() {
+            const mergeType = document.getElementById("mergeTypeDropdown").value;
+            const headers = predefinedHeaders[mergeType] || [];
+
+            if (headers.length === 0) {
+                alert("No headers found for the selected type.");
+                return;
+            }
+
+            // Create a new workbook and worksheet
+            const workbook = XLSX.utils.book_new();
+            const worksheetData = [headers];
+            const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+            // Append the worksheet to the workbook
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Headers");
+
+            // Generate Excel file and trigger download
+            const filename = `${mergeType}_headers.xlsx`;
+            XLSX.writeFile(workbook, filename);
+        }
+
     </script>
 
 </body>
