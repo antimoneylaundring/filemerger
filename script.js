@@ -332,8 +332,14 @@ function displayPreview(data) {
     Object.keys(data[0]).forEach(column => {
         const th = document.createElement("th");
         th.textContent = column;
-        th.style.border = "1px solid black";
-        th.style.padding = "8px";
+        th.style.border = "1px solid rgb(41 39 68)";
+        th.style.padding = "8px 2px";
+        th.style.backgroundColor = "#5a5693";
+        th.style.color = "#fff";
+        th.style.fontSize = "15px"
+        th.style.fontWeight = "500"
+        th.style.textAlign = "center";
+        th.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
         headerRow.appendChild(th);
     });
     table.appendChild(headerRow);
@@ -344,7 +350,7 @@ function displayPreview(data) {
         Object.values(row).forEach(cell => {
             const cellElement = document.createElement("td");
             cellElement.textContent = cell || "";  // Show empty if cell is undefined
-            cellElement.style.border = "1px solid black";
+            cellElement.style.border = "1px solid rgb(41 39 68)";
             cellElement.style.padding = "8px";
             rowElement.appendChild(cellElement);
         });
