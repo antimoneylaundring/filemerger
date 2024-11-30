@@ -247,7 +247,7 @@ async function previewData() {
             ? (excelRow?.payment_gateway_url || '')
             : mergeType === 'credit_netbanking'
                 ? [intermediateUrl1, intermediateUrl2, intermediateUrl3, intermediateUrl4]
-                    .filter(Boolean) // Remove empty or null values
+                    .filter(Boolean)
                     .join(',') // Join domains with commas
                 : 'NA';
 
