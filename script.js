@@ -224,7 +224,7 @@ async function previewData() {
         const platform = mergeType === 'telegram'
             ? determinePlatform(excelRow?.website_url || '') // Check platform for Telegram
             : mergeType === 'credit_netbanking'
-                ? excelRow?.platform?.replace('Banking', 'banking')
+                ? excelRow?.platform?.replace('Banking','banking')
                 : 'NA';
 
         const paymentUrl = mergeType === 'upi'
