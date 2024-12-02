@@ -203,7 +203,7 @@ async function previewData() {
         const upiType = mergeType === 'upi' || mergeType === 'telegram'
             ? determineType(excelRow?.upi_vpa || '')
             : mergeType === 'credit_netbanking'
-                ? excelRow?.platform
+                ? excelRow?.platform?.replace('banking','Banking')
                 : 'NA';
 
         // Extract the timestamp from the URL and convert it to a date
@@ -224,7 +224,7 @@ async function previewData() {
         const platform = mergeType === 'telegram'
             ? determinePlatform(excelRow?.website_url || '') // Check platform for Telegram
             : mergeType === 'credit_netbanking'
-                ? excelRow?.platform?.replace('Banking','banking')
+                ? excelRow?.platform
                 : 'NA';
 
         const paymentUrl = mergeType === 'upi'
