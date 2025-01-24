@@ -13,7 +13,7 @@ async function loadStaticJson() {
     const mergeType = document.getElementById('mergeTypeDropdown').value;
 
     let jsonFilePath = '';
-    if (mergeType === 'upi' || mergeType === 'credit_netbanking') {
+    if (mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found') {
         jsonFilePath = 'json/secondFile.json'; // JSON for UPI
     } else if (mergeType === 'telegram') {
         jsonFilePath = 'json/telegram_wtsp.json'; // JSON for Telegram
@@ -212,11 +212,11 @@ async function previewData() {
 
         const dateTime = convertToDateTime(timestamp);
 
-        const origin = mergeType === 'upi' || mergeType === 'credit_netbanking' && excelRow?.website_url
+        const origin = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' && excelRow?.website_url
             ? originWebsiteMap[excelRow.website_url]
             : 'INDIA';
 
-        const category = mergeType === 'upi' || mergeType === 'credit_netbanking'
+        const category = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found'
             ? (excelRow?.website_url ? categoryWebsiteMap[excelRow.website_url] : 'NA') // UPI ke liye JSON logic
             : excelRow?.category || 'NA';
 
