@@ -290,6 +290,10 @@ async function previewData() {
                     ? excelRow?.account_holder_name
                     : "NA"
                 : 'NA';
+            
+        const branchName = mergeType === 'not_found'
+            ? ''
+            : "NA"
 
         return {
             ...secondFileData.sheet1Data[0], // Start with the full JSON structure as the base,
@@ -312,7 +316,8 @@ async function previewData() {
             bank_name: bankName,
             origin: origin,
             category_of_website: category,
-            platform: platform
+            platform: platform,
+            bank_branch_details: branchName
         };
     });
 
