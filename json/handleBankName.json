@@ -1879,6 +1879,26 @@
         {
             "Handle": "ptys",
             "Bank_name": "Yes Bank"
+        },
+        {
+            "Handle": "superyes",
+            "Bank_name": "Yes Bank"
+        },
+        {
+            "Handle": "Yespop",
+            "Bank_name": "Yes Bank"
+        },
+        {
+            "Handle": "rxairtel",
+            "Bank_name": "Airtel Payment Bank"
+        },
+        {
+            "Handle": "gwaxis",
+            "Bank_name": "Axis Bank"
+        },
+        {
+            "Handle": "kotak811",
+            "Bank_name": "Kotak Mahindra Bank"
         }
     ]
 }
