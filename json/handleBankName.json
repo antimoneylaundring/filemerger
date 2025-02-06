@@ -1899,6 +1899,10 @@
         {
             "Handle": "kotak811",
             "Bank_name": "Kotak Mahindra Bank"
+        },
+        {
+            "Handle": "mycggb",
+            "Bank_name": "Chaitanya Godavari Grameena Bank"
         }
     ]
 }
