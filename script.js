@@ -55,8 +55,8 @@ async function loadStaticJson() {
     })
 
     category.Sheet1.forEach(item => {
-        if (item.url && item.Category) {
-            categoryWebsiteMap[item.url] = item.Category;
+        if (item.url && item.category) {
+            categoryWebsiteMap[item.url] = item.category;
         }
     })
 
