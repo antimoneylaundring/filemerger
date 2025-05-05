@@ -4781,10 +4781,6 @@
             "Category": "Gambling/Betting"
         },
         {
-            "url": "https://bdglottery.cc",
-            "Category": "Gambling/Betting"
-        },
-        {
             "url": "https://bdglottery.net",
             "Category": "Gambling/Betting"
         },
@@ -52674,6 +52670,10 @@
         {
             "url": "https://www.diuwin.bet",
             "category": "Gambling/Betting"
-        }
+        },
+        {
+            "url": "https://bdglottery.cc",
+            "Category": "Gambling/Betting"
+        },
     ]
 }
