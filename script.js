@@ -86,7 +86,7 @@ function extractDomain(url) {
         domain = domain.replace(/^www\./, '');
         return domain;  // Extracts the domain (without 'https://' or path)
     } catch (e) {
-        return 'Invalid URL';  // In case of invalid URL
+        return '';  // In case of invalid URL
     }
 }
 
