@@ -86,7 +86,7 @@ function extractDomain(url) {
         domain = domain.replace(/^www\./, '');
         return domain;  // Extracts the domain (without 'https://' or path)
     } catch (e) {
-        return '';  // In case of empty column
+        return 'NA';  // In case of empty column
     }
 }
 
@@ -203,7 +203,7 @@ async function previewData() {
         const upiType = mergeType === 'upi' || mergeType === 'telegram'
             ? determineType(excelRow?.upi_vpa || '')
             : mergeType === 'credit_netbanking'
-                ? excelRow?.platform?.replace('banking','Banking')
+                ? excelRow?.platform?.replace('banking', 'Banking')
                 : 'NA';
 
         // Extract the timestamp from the URL and convert it to a date
@@ -228,14 +228,14 @@ async function previewData() {
                 : 'NA';
 
         const paymentUrl = mergeType === 'upi'
-            ? (excelRow?.payment_gateway_url || '')
+            ? (excelRow?.payment_gateway_url || 'NA')
             : mergeType === 'credit_netbanking'
                 ? (excelRow?.destination_url || '')
                 : "NA";
 
 
         const upiUrl = mergeType === 'upi'
-            ? (excelRow?.payment_gateway_url || '')
+            ? (excelRow?.payment_gateway_url || 'NA')
             : "NA";
 
         const intermediateUrl1 = excelRow?.intermediate_url_1 ? excelRow?.intermediate_url_1 : '';
@@ -244,7 +244,7 @@ async function previewData() {
         const intermediateUrl4 = excelRow?.intermediate_url_4 ? excelRow?.intermediate_url_4 : '';
 
         const intermediateUrls = mergeType === 'upi'
-            ? (excelRow?.payment_gateway_url || '')
+            ? (excelRow?.payment_gateway_url || 'NA')
             : mergeType === 'credit_netbanking'
                 ? [intermediateUrl1, intermediateUrl2, intermediateUrl3, intermediateUrl4]
                     .filter(Boolean)
@@ -271,7 +271,7 @@ async function previewData() {
                 ? 'NA'
                 : 'NA';
 
-        const ifsc = mergeType === 'upi'
+        const ifsc = mergeType === 'upi' || mergeType === 'telegram'
             ? excelRow?.ifsc_code || ''
             : mergeType === 'credit_netbanking'
                 ? 'NA'
@@ -290,7 +290,7 @@ async function previewData() {
                     ? excelRow?.account_holder_name
                     : "NA"
                 : 'NA';
-            
+
         const branchName = mergeType === 'not_found'
             ? ''
             : "NA"
