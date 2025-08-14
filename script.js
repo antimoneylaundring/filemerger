@@ -110,7 +110,7 @@ function determineType(upiVpa) {
 
 function extractTimestampFromUrl(url) {
     // Extract the number from the URL (after 'npci-')
-    const match = url.match(/npci-(\d+)--/);
+    const match = url.match(/--(\d+)--/);
     if (match && match[1]) {
         return parseInt(match[1], 10);  // Convert the matched number to an integer
     }
@@ -170,8 +170,9 @@ async function previewData() {
 
         const npciUrl = excelRow?.npci_url ? excelRow.npci_url : '';
         const mfilteritUrl = npciUrl.replace('npci', 'mfilterit');
+        const without_headerUrl = npciUrl.replace('npci', 'without_header');
 
-        const npci_mfilterit = [mfilteritUrl, npciUrl].filter(Boolean).join(',');
+        const npci_mfilterit = [mfilteritUrl, npciUrl, without_headerUrl].filter(Boolean).join(',');
 
         let bankName = "NA";
 
