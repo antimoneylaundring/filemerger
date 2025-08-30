@@ -13,7 +13,7 @@ async function loadStaticJson() {
     const mergeType = document.getElementById('mergeTypeDropdown').value;
 
     let jsonFilePath = '';
-    if (mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found') {
+    if (mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto') {
         jsonFilePath = 'json/secondFile.json'; // JSON for UPI
     } else if (mergeType === 'telegram') {
         jsonFilePath = 'json/telegram_wtsp.json'; // JSON for Telegram
@@ -229,14 +229,14 @@ async function previewData() {
                 ? excelRow?.platform
                 : 'NA';
 
-        const paymentUrl = mergeType === 'upi'
+        const paymentUrl = mergeType === 'upi' || mergeType === 'crypto'
             ? (excelRow?.payment_gateway_url || 'NA')
             : mergeType === 'credit_netbanking'
                 ? (excelRow?.destination_url || '')
                 : "NA";
 
 
-        const upiUrl = mergeType === 'upi'
+        const upiUrl = mergeType === 'upi' || mergeType === 'crypto'
             ? (excelRow?.payment_gateway_url || 'NA')
             : "NA";
 
@@ -245,7 +245,7 @@ async function previewData() {
         const intermediateUrl3 = excelRow?.intermediate_url_3 ? excelRow?.intermediate_url_3 : '';
         const intermediateUrl4 = excelRow?.intermediate_url_4 ? excelRow?.intermediate_url_4 : '';
 
-        const intermediateUrls = mergeType === 'upi'
+        const intermediateUrls = mergeType === 'upi' || mergeType === 'crypto'
             ? (excelRow?.payment_gateway_url || 'NA')
             : mergeType === 'credit_netbanking'
                 ? [intermediateUrl1, intermediateUrl2, intermediateUrl3, intermediateUrl4]
@@ -261,7 +261,7 @@ async function previewData() {
                     .join(',') // Join domains with commas
                 : '';
 
-        const paymentIntermediateUrls = mergeType === 'upi'
+        const paymentIntermediateUrls = mergeType === 'upi' || mergeType === 'crypto'
             ? extractDomain(excelRow?.payment_gateway_url || '')
             : mergeType === 'credit_netbanking'
                 ? intermediateDomainName
@@ -296,6 +296,24 @@ async function previewData() {
         const branchName = mergeType === 'not_found'
             ? ''
             : "NA"
+        
+        const crypto_wallet_id = mergeType === 'crypto'
+            ? excelRow?.Crypto_wallet_id
+            : "NA"
+
+        const crypto_platform = mergeType === 'crypto'
+            ? excelRow?.Crypto_platform
+            : "NA"
+
+        const crypto_wallet = excelRow?.Balance_in_crypto_wallet
+        const balance_in_crypto_wallet = mergeType ==='crypto'
+            ? (crypto_wallet !== undefined && crypto_wallet !== null ? String(crypto_wallet) : "NA")
+            :"NA"
+
+        const transaction_count_value = excelRow?.Crypto_wallet_transaction_count;
+        const crypto_wallet_transaction_count = mergeType ==='crypto'
+            ? (transaction_count_value !== undefined && transaction_count_value !== null ? String(transaction_count_value) : "NA")
+            :"NA"
 
         return {
             ...secondFileData.sheet1Data[0], // Start with the full JSON structure as the base,
@@ -319,7 +337,11 @@ async function previewData() {
             origin: origin,
             category_of_website: category,
             platform: platform,
-            bank_branch_details: branchName
+            bank_branch_details: branchName,
+            crypto_wallet_id: crypto_wallet_id,
+            crypto_platform: crypto_platform,
+            balance_in_crypto_wallet: balance_in_crypto_wallet,
+            crypto_wallet_transaction_count: crypto_wallet_transaction_count
         };
     });
 

@@ -34,7 +34,10 @@
             "reported_earlier": "",
             "approvd_status": 1,
             "feature_type": "BS Money Laundering",
-            "case_generated_time": "NA"
+            "case_generated_time": "NA",
+            "crypto_wallet_id": "NA",
+            "crypto_platform": "NA",
+            "crypto_wallet_transaction_count": "NA"
         }
     ]
 }
