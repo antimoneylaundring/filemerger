@@ -235,7 +235,6 @@ async function previewData() {
                 ? (excelRow?.destination_url || '')
                 : "NA";
 
-
         const upiUrl = mergeType === 'upi' || mergeType === 'crypto'
             ? (excelRow?.payment_gateway_url || 'NA')
             : "NA";
