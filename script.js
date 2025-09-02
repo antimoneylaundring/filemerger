@@ -216,11 +216,11 @@ async function previewData() {
 
         const dateTime = convertToDateTime(timestamp);
 
-        const origin = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' && excelRow?.website_url
+        const origin = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' && excelRow?.website_url
             ? originWebsiteMap[excelRow.website_url]
             : 'INDIA';
 
-        const category = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found'
+        const category = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto'
             ? (excelRow?.website_url ? categoryWebsiteMap[excelRow.website_url] : 'NA') // UPI ke liye JSON logic
             : excelRow?.category || 'NA';
 
