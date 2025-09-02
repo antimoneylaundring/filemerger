@@ -206,7 +206,9 @@ async function previewData() {
             ? determineType(excelRow?.upi_vpa || '')
             : mergeType === 'credit_netbanking'
                 ? excelRow?.platform?.replace('banking', 'Banking')
-                : 'NA';
+                : mergeType === 'crypto'
+                    ? 'Crypto'
+                    : 'NA';
 
         // Extract the timestamp from the URL and convert it to a date
         const timestamp = extractTimestampFromUrl(excelRow?.npci_url); // Adjust the column name as needed
