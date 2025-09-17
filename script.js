@@ -18,6 +18,9 @@ async function loadStaticJson() {
     } else if (mergeType === 'telegram') {
         jsonFilePath = 'json/telegram_wtsp.json'; // JSON for Telegram
     }
+    else if (mergeType === 'investment_scam') {
+        jsonFilePath = 'json/investment_scam.json'; // JSON for Telegram
+    }
 
     // Load the selected JSON file
     const selectedJsonFile = await fetch(jsonFilePath);
@@ -180,7 +183,7 @@ async function previewData() {
         let upiHandle = 'NA';
         let ifscCode = 'NA';
 
-        if (mergeType === 'upi' || mergeType === 'telegram') {
+        if (mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam') {
             upiHandle = excelRow?.upi_vpa && String(excelRow.upi_vpa).includes('@')
                 ? String(excelRow.upi_vpa).split('@')[1].toLowerCase()
                 : 'NA';
@@ -218,12 +221,30 @@ async function previewData() {
 
         const origin = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' && excelRow?.website_url
             ? originWebsiteMap[excelRow.website_url]
-            : 'INDIA';
+            : 'NA'
+        
+        const categoryMap_Inevst_scam = {
+            "t.me": "Telegram",
+            "telegram.org": "Telegram",
+            "wa.me": "Whatsapp",
+            "facebook.com": "Facebook",
+            "instagram.com": "Instagram",
+            "threads.com": "Thread",
+            "youtube.com": "YouTube",
+            "x.com": "X"
+        }
 
         const category = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto'
             ? (excelRow?.website_url ? categoryWebsiteMap[excelRow.website_url] : 'NA') // UPI ke liye JSON logic
+            : mergeType === "investment_scam"
+            ? (() => {
+                    const url = excelRow?.website_url || "";
+                    const match = Object.keys(categoryMap_Inevst_scam).find((domain) =>
+                    url.includes(domain)
+                    );
+                    return match ? categoryMap_Inevst_scam[match] : "NA";
+                })()
             : excelRow?.category || 'NA';
-
 
         const platform = mergeType === 'telegram'
             ? determinePlatform(excelRow?.website_url || '') // Check platform for Telegram
@@ -268,25 +289,25 @@ async function previewData() {
                 ? intermediateDomainName
                 : 'NA';
 
-        const bankAccountNumber = mergeType === 'upi' || mergeType === 'telegram'
+        const bankAccountNumber = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam'
             ? excelRow?.bank_account_number || ''
             : mergeType === 'credit_netbanking'
                 ? 'NA'
                 : 'NA';
 
-        const ifsc = mergeType === 'upi' || mergeType === 'telegram'
+        const ifsc = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam'
             ? excelRow?.ifsc_code || ''
             : mergeType === 'credit_netbanking'
                 ? 'NA'
                 : 'NA';
 
-        const upiId = mergeType === 'upi' || mergeType === 'telegram'
+        const upiId = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam'
             ? excelRow?.upi_vpa || ''
             : mergeType === 'credit_netbanking'
                 ? 'NA'
                 : 'NA';
 
-        const accHolderName = mergeType === 'upi' || mergeType === 'telegram'
+        const accHolderName = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam'
             ? excelRow?.account_holder_name
             : mergeType === "credit_netbanking"
                 ? excelRow?.account_holder_name
@@ -316,6 +337,10 @@ async function previewData() {
             ? (transaction_count_value !== undefined && transaction_count_value !== null ? String(transaction_count_value) : "NA")
             :"NA"
 
+        const contact_no = mergeType === 'investment_scam'
+            ? excelRow?.contact_no
+            : 'NA'
+
         return {
             ...secondFileData.sheet1Data[0], // Start with the full JSON structure as the base,
             bank_account_number: bankAccountNumber, // Account Number
@@ -342,7 +367,8 @@ async function previewData() {
             crypto_wallet_id: crypto_wallet_id,
             crypto_platform: crypto_platform,
             balance_in_crypto_wallet: balance_in_crypto_wallet,
-            crypto_wallet_transaction_count: crypto_wallet_transaction_count
+            crypto_wallet_transaction_count: crypto_wallet_transaction_count,
+            web_contact_no : contact_no
         };
     });
 

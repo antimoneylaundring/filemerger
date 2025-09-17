@@ -10,7 +10,7 @@
             "ac_holder_name": "",
             "screenshot": "NA",
             "platform": "NA",
-            "search_for": "Web",
+            "search_for": "NA",
             "status": "Active",
             "upi_bank_account_wallet": "NA",
             "priority": "High",
@@ -33,12 +33,9 @@
             "inserted_date": "NA",
             "reported_earlier": "",
             "approvd_status": 1,
-            "feature_type": "BS Money Laundering",
+            "feature_type": "BS Investment Scam",
             "case_generated_time": "NA",
-            "web_contact_no": "NA",
-            "crypto_wallet_id": "NA",
-            "crypto_platform": "NA",
-            "crypto_wallet_transaction_count": "NA"
+            "web_contact_no": "NA"
         }
     ]
 }
