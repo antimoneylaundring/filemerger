@@ -205,7 +205,7 @@ async function previewData() {
             bankName = excelRow?.bank_name || '';
         }
 
-        const upiType = mergeType === 'upi' || mergeType === 'telegram'
+        const upiType = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam'
             ? determineType(excelRow?.upi_vpa || '')
             : mergeType === 'credit_netbanking'
                 ? excelRow?.platform?.replace('banking', 'Banking')
@@ -244,13 +244,29 @@ async function previewData() {
                     );
                     return match ? categoryMap_Inevst_scam[match] : "NA";
                 })()
-            : excelRow?.category || 'NA';
+            : mergeType === 'telegram'
+            ? excelRow?.category
+            : 'NA';
 
-        const platform = mergeType === 'telegram'
-            ? determinePlatform(excelRow?.website_url || '') // Check platform for Telegram
-            : mergeType === 'credit_netbanking'
-                ? excelRow?.platform
-                : 'NA';
+        const search_for = mergeType === 'investment_scam'
+            ? (() => {
+                    const url = excelRow?.website_url || "";
+                    const match = Object.keys(categoryMap_Inevst_scam).find((domain) =>
+                    url.includes(domain)
+                    );
+                    return match ? categoryMap_Inevst_scam[match] : "NA";
+                })()
+            : mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto'
+            ? 'Web'
+            : mergeType === 'telegram'
+            ? 'Messaging Channel Platforms'
+            : 'NA';
+
+        // const platform = mergeType === 'telegram'
+        //     ? determinePlatform(excelRow?.website_url || '') // Check platform for Telegram
+        //     : mergeType === 'credit_netbanking'
+        //         ? excelRow?.platform
+        //         : 'NA';
 
         const paymentUrl = mergeType === 'upi' || mergeType === 'crypto'
             ? (excelRow?.payment_gateway_url || 'NA')
@@ -341,6 +357,8 @@ async function previewData() {
             ? excelRow?.contact_no
             : 'NA'
 
+        
+
         return {
             ...secondFileData.sheet1Data[0], // Start with the full JSON structure as the base,
             bank_account_number: bankAccountNumber, // Account Number
@@ -362,13 +380,14 @@ async function previewData() {
             bank_name: bankName,
             origin: origin,
             category_of_website: category,
-            platform: platform,
+            // platform: platform,
             bank_branch_details: branchName,
             crypto_wallet_id: crypto_wallet_id,
             crypto_platform: crypto_platform,
             balance_in_crypto_wallet: balance_in_crypto_wallet,
             crypto_wallet_transaction_count: crypto_wallet_transaction_count,
-            web_contact_no : contact_no
+            web_contact_no : contact_no,
+            search_for : search_for
         };
     });
 
