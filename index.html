@@ -45,12 +45,12 @@
     <script src="script.js"></script>
     <script>
         const predefinedHeaders = {
-            upi: ['bank_account_number', 'ifsc_code', 'upi_vpa', 'account_holder_name', 'npci_url', 'website_url', 'payment_gateway_url', 'transaction_method'],
-            telegram: ['upi_vpa', 'account_holder_name', 'bank_account_number', 'ifsc_code', 'website_url', 'npci_url', 'category'],
-            credit_netbanking: ['website_url', 'intermediate_url_1', 'intermediate_url_2', 'intermediate_url_3', 'intermediate_url_4', 'destination_url', 'transaction_method', 'npci_url', 'platform', 'account_holder_name', 'bank_name'],
-            not_found: ['website_url', 'npci_url'],
-            crypto : ['Crypto_wallet_id', 'Crypto_platform', 'Balance_in_crypto_wallet', 'Crypto_wallet_transaction_count', 'npci_url', 'payment_gateway_url', 'website_url'],
-            investment_scam : ['upi_vpa', 'account_holder_name', 'bank_account_number', 'ifsc_code', 'website_url', 'npci_url', 'transaction_method', 'contact_no']
+            upi: ['bank_account_number', 'ifsc_code', 'upi_vpa', 'account_holder_name', 'without_header_url', 'website_url', 'payment_gateway_url', 'transaction_method'],
+            telegram: ['upi_vpa', 'account_holder_name', 'bank_account_number', 'ifsc_code', 'website_url', 'without_header_url', 'category'],
+            credit_netbanking: ['website_url', 'intermediate_url_1', 'intermediate_url_2', 'intermediate_url_3', 'intermediate_url_4', 'destination_url', 'transaction_method', 'without_header_url', 'platform', 'account_holder_name', 'bank_name'],
+            not_found: ['website_url', 'without_header_url'],
+            crypto : ['Crypto_wallet_id', 'Crypto_platform', 'Balance_in_crypto_wallet', 'Crypto_wallet_transaction_count', 'without_header_url', 'payment_gateway_url', 'website_url'],
+            investment_scam : ['upi_vpa', 'account_holder_name', 'bank_account_number', 'ifsc_code', 'website_url', 'without_header_url', 'transaction_method', 'contact_no']
         };
 
         function showHeaders() {
