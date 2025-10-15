@@ -172,7 +172,7 @@ async function previewData() {
 
         const mergeType = document.getElementById('mergeTypeDropdown').value;
 
-        const npciUrl = excelRow?.without_header_url ? excelRow.without_header_url : '';
+        const npciUrl = excelRow?.npci_url ? excelRow.npci_url : '';
         const mfilteritUrl = npciUrl.replace('npci', 'mfilterit');
         const without_headerUrl = npciUrl.replace('npci', 'without_header');
 
@@ -214,7 +214,7 @@ async function previewData() {
                     : 'NA';
 
         // Extract the timestamp from the URL and convert it to a date
-        const timestamp = extractTimestampFromUrl(excelRow?.without_header_url); // Adjust the column name as needed
+        const timestamp = extractTimestampFromUrl(excelRow?.npci_url); // Adjust the column name as needed
         const date = convertTimestampToDate(timestamp)
 
         const dateTime = convertToDateTime(timestamp);
