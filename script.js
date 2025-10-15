@@ -113,7 +113,7 @@ function determineType(upiVpa) {
 
 function extractTimestampFromUrl(url) {
     // Extract the number from the URL (after 'npci-')
-    const match = url.match(/npci-(\d+)_/);
+    const match = url.match(/without_header-(\d+)_/);
     // const match = url.match(/--(\d+)--/);
     if (match && match[1]) {
         return parseInt(match[1], 10);  // Convert the matched number to an integer
@@ -300,7 +300,9 @@ async function previewData() {
                 : '';
 
         const paymentIntermediateUrls = mergeType === 'upi' || mergeType === 'crypto'
-            ? extractDomain(excelRow?.payment_gateway_url || '')
+            ? (extractDomain(excelRow?.payment_gateway_url || '') === extractDomain(excelRow?.website_url || '')
+                ? 'NA'
+                : extractDomain(excelRow?.payment_gateway_url || ''))
             : mergeType === 'credit_netbanking'
                 ? intermediateDomainName
                 : 'NA';
