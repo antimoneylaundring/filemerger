@@ -113,7 +113,7 @@ function determineType(upiVpa) {
 
 function extractTimestampFromUrl(url) {
     // Extract the number from the URL (after 'npci-')
-    const match = url.match(/npci-(\d+)_/);
+    const match = url.match(/(?:npci|mfilterit|without_header)-(\d+)_/);
     // const match = url.match(/--(\d+)--/);
     if (match && match[1]) {
         return parseInt(match[1], 10);  // Convert the matched number to an integer
@@ -172,11 +172,26 @@ async function previewData() {
 
         const mergeType = document.getElementById('mergeTypeDropdown').value;
 
-        const npciUrl = excelRow?.npci_url ? excelRow.npci_url : '';
-        const mfilteritUrl = npciUrl.replace('npci', 'mfilterit');
-        const without_headerUrl = npciUrl.replace('npci', 'without_header');
+        let ss_url = excelRow?.npci_url ? excelRow.npci_url : '';
+        let npciUrl = ''
+        let mfilterit = '';
+        let without_header = '';
 
-        const npci_mfilterit = [mfilteritUrl, npciUrl, without_headerUrl].filter(Boolean).join(',');
+        if (ss_url.includes('npci')) {
+            mfilterit = ss_url.replace('npci', 'mfilterit');
+            without_header = ss_url.replace('npci', 'without_header');
+            npciUrl = ss_url;
+        } else if (ss_url.includes('mfilterit')) {
+            npciUrl = ss_url.replace('mfilterit', 'npci');
+            without_header = ss_url.replace('mfilterit', 'without_header');
+            mfilterit = ss_url 
+        } else if (ss_url.includes('without_header')) {
+            npciUrl = ss_url.replace('without_header', 'npci');
+            mfilterit = ss_url.replace('without_header', 'mfilterit');
+            without_header = ss_url;
+        }
+
+        const npci_mfilterit = [mfilterit, npciUrl, without_header].filter(Boolean).join(',');
 
         let bankName = "NA";
 
@@ -222,7 +237,7 @@ async function previewData() {
         const origin = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' && excelRow?.website_url
             ? originWebsiteMap[excelRow.website_url]
             : 'NA'
-        
+
         const categoryMap_Inevst_scam = {
             "t.me": "Telegram",
             "telegram.org": "Telegram",
@@ -237,36 +252,30 @@ async function previewData() {
         const category = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto'
             ? (excelRow?.website_url ? categoryWebsiteMap[excelRow.website_url] : 'NA') // UPI ke liye JSON logic
             : mergeType === "investment_scam"
-            ? (() => {
+                ? (() => {
                     const url = excelRow?.website_url || "";
                     const match = Object.keys(categoryMap_Inevst_scam).find((domain) =>
-                    url.includes(domain)
+                        url.includes(domain)
                     );
                     return match ? categoryMap_Inevst_scam[match] : "NA";
                 })()
-            : mergeType === 'telegram'
-            ? excelRow?.category
-            : 'NA';
+                : mergeType === 'telegram'
+                    ? excelRow?.category
+                    : 'NA';
 
         const search_for = mergeType === 'investment_scam'
             ? (() => {
-                    const url = excelRow?.website_url || "";
-                    const match = Object.keys(categoryMap_Inevst_scam).find((domain) =>
+                const url = excelRow?.website_url || "";
+                const match = Object.keys(categoryMap_Inevst_scam).find((domain) =>
                     url.includes(domain)
-                    );
-                    return match ? categoryMap_Inevst_scam[match] : "NA";
-                })()
+                );
+                return match ? categoryMap_Inevst_scam[match] : "NA";
+            })()
             : mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto'
-            ? 'Web'
-            : mergeType === 'telegram'
-            ? 'Messaging Channel Platforms'
-            : 'NA';
-
-        // const platform = mergeType === 'telegram'
-        //     ? determinePlatform(excelRow?.website_url || '') // Check platform for Telegram
-        //     : mergeType === 'credit_netbanking'
-        //         ? excelRow?.platform
-        //         : 'NA';
+                ? 'Web'
+                : mergeType === 'telegram'
+                    ? 'Messaging Channel Platforms'
+                    : 'NA';
 
         const paymentUrl = mergeType === 'upi' || mergeType === 'crypto'
             ? (excelRow?.payment_gateway_url || 'NA')
@@ -336,7 +345,7 @@ async function previewData() {
         const branchName = mergeType === 'not_found'
             ? ''
             : "NA"
-        
+
         const crypto_wallet_id = mergeType === 'crypto'
             ? excelRow?.Crypto_wallet_id
             : "NA"
@@ -346,20 +355,20 @@ async function previewData() {
             : "NA"
 
         const crypto_wallet = excelRow?.Balance_in_crypto_wallet
-        const balance_in_crypto_wallet = mergeType ==='crypto'
+        const balance_in_crypto_wallet = mergeType === 'crypto'
             ? (crypto_wallet !== undefined && crypto_wallet !== null ? String(crypto_wallet) : "NA")
-            :"NA"
+            : "NA"
 
         const transaction_count_value = excelRow?.Crypto_wallet_transaction_count;
-        const crypto_wallet_transaction_count = mergeType ==='crypto'
+        const crypto_wallet_transaction_count = mergeType === 'crypto'
             ? (transaction_count_value !== undefined && transaction_count_value !== null ? String(transaction_count_value) : "NA")
-            :"NA"
+            : "NA"
 
         const contact_no = mergeType === 'investment_scam'
             ? excelRow?.contact_no
             : 'NA'
 
-        
+
 
         return {
             ...secondFileData.sheet1Data[0], // Start with the full JSON structure as the base,
@@ -388,8 +397,8 @@ async function previewData() {
             crypto_platform: crypto_platform,
             balance_in_crypto_wallet: balance_in_crypto_wallet,
             crypto_wallet_transaction_count: crypto_wallet_transaction_count,
-            web_contact_no : contact_no,
-            search_for : search_for
+            web_contact_no: contact_no,
+            search_for: search_for
         };
     });
 
