@@ -483,7 +483,7 @@ document.getElementById("uploadExcel").addEventListener("click", async () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        fileName: "handleBankName.json",
+        fileName: "originWebsite.json",
         data: jsonData
       })
     });
