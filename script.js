@@ -466,6 +466,33 @@ function downloadUpdatedFile() {
     }, 500);
 }
 
+document.getElementById("uploadExcel").addEventListener("click", async () => {
+  const fileInput = document.getElementById("excelFile");
+  const file = fileInput.files[0];
+  if (!file) return alert("Please select an Excel file first.");
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const workbook = XLSX.read(e.target.result, { type: "binary" });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const jsonData = XLSX.utils.sheet_to_json(sheet);
+    console.log("Converted JSON:", jsonData);
+
+    // Send JSON to backend (to update file in GitHub repo)
+    const res = await fetch("https://your-backend.vercel.app/api/update-json", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fileName: "handleBankName.json",
+        data: jsonData
+      })
+    });
+
+    const msg = await res.text();
+    alert(msg);
+  };
+  reader.readAsBinaryString(file);
+});
 
 // Load the static JSON once when the page loads
 loadStaticJson();
