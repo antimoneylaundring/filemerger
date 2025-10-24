@@ -479,7 +479,7 @@ document.getElementById("uploadExcel").addEventListener("click", async () => {
     console.log("Converted JSON:", jsonData);
 
     // Send JSON to backend (to update file in GitHub repo)
-    const res = await fetch("https://your-backend.vercel.app/api/update-json", {
+    const res = await fetch("https://filemerger-phi.vercel.app/api/update-json", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
