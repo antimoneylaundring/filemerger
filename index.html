@@ -19,7 +19,7 @@
                     <input type="file" id="uploadFirstFile" accept=".xlsx, .xls, .csv" />
                 </div>
                 <div class="fist-file">
-                    <input type="file" id="excelFile" accept=".xlsx,.xls" style="margin-right: -75px;" />
+                    <input type="file" id="inputFile" accept=".xlsx,.xls" style="margin-right: -75px;" />
                     <button id="uploadExcel" class="btn" onclick="uploadJSON()">update</button>
                 </div>
                 <div>
@@ -128,7 +128,7 @@
         }
 
         async function uploadJSON() {
-            const file = document.getElementById("uploadExcel").files[0];
+            const file = document.getElementById("inputFile").files[0];
             if (!file) return alert("Please select a file");
 
             const reader = new FileReader();
