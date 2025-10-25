@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     // Write to the selected JSON file
     fs.writeFileSync(filePath, jsonString, 'utf-8');
 
-    res.status(200).json({ message: `✅ ${fileName} updated successfully.` });
+    res.status(200).json({ message: `${fileName} updated successfully.` });
   } catch (error) {
     console.error('Error updating JSON:', error);
     res.status(500).json({ message: 'Error updating file', error: error.message });
