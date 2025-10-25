@@ -19,12 +19,12 @@
                     <input type="file" id="uploadFirstFile" accept=".xlsx, .xls, .csv" />
                 </div>
                 <div class="fist-file">
-                    <input type="file" id="inputFile" accept=".xlsx,.xls" style="margin-right: -75px;" />
-                    <button id="uploadExcel" class="btn" onclick="uploadJSON()">update</button>
+                    <input type="file" id="excelFile" accept=".xlsx,.xls" style="margin-right: -75px;" />
+                    <button id="uploadExcel" class="btn" onclick="uploadExcelAndUpdateJSON()">update</button>
                 </div>
                 <div>
                     <label for="">File Format:</label>
-                    <select name="fileFormat" id="fileSelect" class="mergeType">
+                    <select name="fileFormat" id="jsonFileDropdown" class="mergeType">
                         <option value="originWebsite.json">Origin</option>
                         <option value="categoryWebsite.json">Category</option>
                     </select>
@@ -45,7 +45,8 @@
                     <!-- <Button class="preview-btn btn" id="mergeBtn" onclick="previewData()">Merge & Preview Data</Button> -->
                     <!-- <Button class="merge-btn btn" id="download" onclick="downloadUpdatedFile()">Merge, Preview & Download</Button> -->
                     <!-- <Button class="merge-preview-btn btn" id="mergeDownloadBtn" onclick="mergeAndDownload()">Merge, Preview & Download</Button> -->
-                    <Button class="merge-preview-btn btn" id="mergeDownloadBtn" onclick="handleMergeDownload()">Merge & Preview Data</Button>
+                    <Button class="merge-preview-btn btn" id="mergeDownloadBtn" onclick="handleMergeDownload()">Merge &
+                        Preview Data</Button>
                 </div>
             </div>
             <div style="height: 65vh; margin-top: 15px;">
@@ -78,7 +79,7 @@
             table.style.borderCollapse = "collapse";
             table.style.width = "100%";
 
-            const headerRow = document.createElement("tr");
+            const headerRow = document.zcreateElement("tr");
 
             // Create table headers
             headers.forEach(header => {
@@ -127,28 +128,62 @@
             XLSX.writeFile(workbook, filename);
         }
 
-        async function uploadJSON() {
-            const file = document.getElementById("inputFile").files[0];
-            if (!file) return alert("Please select a file");
+        // async function uploadJSON() {
+        //     const file = document.getElementById("inputFile").files[0];
+        //     if (!file) return alert("Please select a file");
 
-            const reader = new FileReader();
-            reader.onload = async function (event) {
-                try {
-                    const updatedData = JSON.parse(event.target.result);
+        //     const reader = new FileReader();
+        //     reader.onload = async function (event) {
+        //         try {
+        //             const updatedData = JSON.parse(event.target.result);
 
-                    const res = await fetch("/api/update-json", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ updatedData }),
-                    });
+        //             const res = await fetch("/api/update-json", {
+        //                 method: "POST",
+        //                 headers: { "Content-Type": "application/json" },
+        //                 body: JSON.stringify({ updatedData }),
+        //             });
 
-                    const result = await res.json();
-                    alert(result.message || "Update completed!");
-                } catch (err) {
-                    alert("Error reading or uploading file: " + err.message);
-                }
-            };
-            reader.readAsText(file);
+        //             const result = await res.json();
+        //             alert(result.message || "Update completed!");
+        //         } catch (err) {
+        //             alert("Error reading or uploading file: " + err.message);
+        //         }
+        //     };
+        //     reader.readAsText(file);
+        // }
+
+        async function uploadExcelAndUpdateJSON() {
+            const fileInput = document.getElementById("excelFile");
+            const selectedFile = fileInput.files[0];
+            const jsonFileName = document.getElementById("jsonFileDropdown").value; // from dropdown
+
+            if (!selectedFile) {
+                alert("Please select an Excel file first!");
+                return;
+            }
+
+            // Read Excel
+            const data = await selectedFile.arrayBuffer();
+            const workbook = XLSX.read(data, { type: "array" });
+            const sheetName = workbook.SheetNames[0];
+            const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+            // Send to backend
+            const response = await fetch("/api/update-json", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ fileName: jsonFileName, jsonData }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert("✅ JSON updated successfully!");
+                console.log(result.updatedData);
+            } else {
+                alert("❌ Error: " + result.message);
+                console.error(result.error);
+            }
         }
 
     </script>

@@ -1,29 +1,42 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method not allowed" });
   }
 
   try {
-    const { fileName, newData } = req.body;
-    if (!fileName || !newData) {
-      return res.status(400).json({ message: 'Missing fileName or data' });
+    const { fileName, jsonData } = req.body;
+
+    if (!fileName || !jsonData) {
+      return res.status(400).json({ message: "Missing fileName or jsonData" });
     }
 
-    // Path where JSON files are stored (inside your "json" folder)
-    const filePath = path.join(process.cwd(), 'json', fileName);
+    // Path to JSON file in your project
+    const filePath = path.join(process.cwd(), "json", fileName);
 
-    // Convert to JSON string
-    const jsonString = JSON.stringify(newData, null, 2);
+    // Ensure file exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: `File not found: ${fileName}` });
+    }
 
-    // Write to the selected JSON file
-    fs.writeFileSync(filePath, jsonString, 'utf-8');
+    // Vercel filesystem is read-only, so write to /tmp
+    const tempPath = path.join("/tmp", fileName);
 
-    res.status(200).json({ message: `${fileName} updated successfully.` });
-  } catch (error) {
-    console.error('Error updating JSON:', error);
-    res.status(500).json({ message: 'Error updating file', error: error.message });
+    // Your JSON file format is {"Sheet1": [ ... ]}
+    const finalData = { Sheet1: jsonData };
+
+    fs.writeFileSync(tempPath, JSON.stringify(finalData, null, 2), "utf8");
+
+    const updatedData = fs.readFileSync(tempPath, "utf8");
+
+    return res.status(200).json({
+      message: "JSON updated successfully!",
+      updatedData: JSON.parse(updatedData),
+    });
+  } catch (err) {
+    console.error("Error updating JSON:", err);
+    return res.status(500).json({ message: "Internal Server Error", error: err.message });
   }
 }
