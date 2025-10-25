@@ -500,7 +500,7 @@ function downloadUpdatedFile() {
 }
 
 document.getElementById("uploadExcel").addEventListener("click", async () => {
-  const fileInput = document.getElementById("excelFile");
+  const fileInput = document.getElementById("inputFile");
   const selectedFile = document.getElementById("fileSelect").value; // from dropdown
   const file = fileInput.files[0];
 
