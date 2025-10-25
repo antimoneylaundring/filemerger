@@ -24,6 +24,13 @@
                 </div>
                 <div>
                     <label for="">File Format:</label>
+                    <select name="fileFormat" id="jsonTypeDropdown" class="mergeType">
+                        <option value="originWebsite.json">Origin</option>
+                        <option value="categoryWebsite.json">Category</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="">File Format:</label>
                     <select name="fileFormat" id="mergeTypeDropdown" class="mergeType">
                         <option value="upi">UPI/Bank/Wallet</option>
                         <option value="telegram">Messaging Channel</option>
@@ -35,8 +42,10 @@
                 </div>
                 <div class="btn-container">
                     <Button class="preview-btn btn" id="download" onclick="downloadHeader()">Download Header</Button>
-                    <Button class="preview-btn btn" id="mergeBtn" onclick="previewData()">Merge & Preview Data</Button>
-                    <Button class="merge-btn btn" id="download" onclick="downloadUpdatedFile()">Download</Button>
+                    <!-- <Button class="preview-btn btn" id="mergeBtn" onclick="previewData()">Merge & Preview Data</Button> -->
+                    <!-- <Button class="merge-btn btn" id="download" onclick="downloadUpdatedFile()">Merge, Preview & Download</Button> -->
+                    <!-- <Button class="merge-preview-btn btn" id="mergeDownloadBtn" onclick="mergeAndDownload()">Merge, Preview & Download</Button> -->
+                    <Button class="merge-preview-btn btn" id="mergeDownloadBtn" onclick="handleMergeDownload()">Merge & Preview Data</Button>
                 </div>
             </div>
             <div style="height: 65vh; margin-top: 15px;">

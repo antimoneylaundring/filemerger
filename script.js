@@ -7,6 +7,7 @@ let handleToBankMap = {};
 let ifscToBankMap = {};
 let originWebsiteMap = {};
 let categoryWebsiteMap = {};
+let isMerged = false;
 
 async function loadStaticJson() {
     // Load the static JSON file only once
@@ -403,6 +404,38 @@ async function previewData() {
     });
 
     displayPreview(mergedData);
+
+    return true;
+}
+
+// async function mergeAndDownload() {
+//     const success = await previewData();
+//     if (!success) return; // Stop if preview failed
+
+//     setTimeout(() => {
+//         downloadUpdatedFile();
+//     }, 500);
+// }
+
+async function handleMergeDownload() {
+    const button = document.getElementById('mergeDownloadBtn');
+
+    if (!isMerged) {
+        const success = await previewData();
+        if (!success) return;
+
+        isMerged = true;
+        button.textContent = 'Download';
+        button.classList.add('ready-to-download');
+    }
+
+    else {
+        downloadUpdatedFile();
+        setTimeout(() => {
+            button.textContent = 'Merge & Preview Data';
+            isMerged = false;
+        }, 1500);
+    }
 }
 
 function displayPreview(data) {
@@ -468,7 +501,9 @@ function downloadUpdatedFile() {
 
 document.getElementById("uploadExcel").addEventListener("click", async () => {
   const fileInput = document.getElementById("excelFile");
+  const selectedFile = document.getElementById("fileSelect").value; // from dropdown
   const file = fileInput.files[0];
+
   if (!file) return alert("Please select an Excel file first.");
 
   const reader = new FileReader();
@@ -478,21 +513,50 @@ document.getElementById("uploadExcel").addEventListener("click", async () => {
     const jsonData = XLSX.utils.sheet_to_json(sheet);
     console.log("Converted JSON:", jsonData);
 
-    // Send JSON to backend (to update file in GitHub repo)
-    const res = await fetch("https://filemerger-phi.vercel.app/api/update-json", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    try {
+      const res = await fetch("/api/update-json", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: selectedFile, // file from dropdown
+          newData: jsonData       // Excel data converted to JSON
+        })
+      });
+
+      const result = await res.json();
+      alert(result.message);
+    } catch (error) {
+      console.error("Error uploading JSON:", error);
+      alert("Failed to update JSON file");
+    }
+  };
+
+  reader.readAsBinaryString(file);
+});
+
+
+async function uploadJson(jsonData) {
+  // Get selected file name from dropdown
+  const fileName = document.getElementById('fileSelect').value;
+
+  try {
+    const response = await fetch('/api/update-json', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        fileName: "originWebsite.json",
-        data: jsonData
+        fileName: fileName,  // from dropdown
+        newData: jsonData    // your JSON data (e.g., from Excel)
       })
     });
 
-    const msg = await res.text();
-    alert(msg);
-  };
-  reader.readAsBinaryString(file);
-});
+    const result = await response.json();
+    alert(result.message);
+  } catch (error) {
+    console.error("Error uploading JSON:", error);
+    alert("Failed to update JSON file");
+  }
+}
+
 
 // Load the static JSON once when the page loads
 loadStaticJson();
