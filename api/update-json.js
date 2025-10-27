@@ -1,5 +1,4 @@
-import fs from "fs";
-import path from "path";
+import fetch from "node-fetch";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -13,27 +12,56 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: "Missing fileName or jsonData" });
     }
 
-    // Path to JSON file in your project
-    const filePath = path.join(process.cwd(), "json", fileName);
+    // File path inside the repo folder
+    const filePath = `json/${fileName}`;
 
-    // Ensure file exists
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ message: `File not found: ${fileName}` });
+    // Prepare final JSON format
+    const finalData = { Sheet1: jsonData };
+    const fileContent = JSON.stringify(finalData, null, 2);
+
+    // GitHub API URL
+    const repo = process.env.GITHUB_REPO;
+    const branch = process.env.GITHUB_BRANCH || "main";
+    const githubApiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
+
+    // Get the file's current SHA
+    const getResponse = await fetch(`${githubApiUrl}?ref=${branch}`, {
+      headers: {
+        Authorization: `token ${process.env.GITHUB_TOKEN}`,
+      },
+    });
+
+    if (!getResponse.ok) {
+      throw new Error(`Failed to fetch file info: ${getResponse.statusText}`);
     }
 
-    // Vercel filesystem is read-only, so write to /tmp
-    const tempPath = path.join("/tmp", fileName);
+    const fileData = await getResponse.json();
+    const sha = fileData.sha;
 
-    // Your JSON file format is {"Sheet1": [ ... ]}
-    const finalData = { Sheet1: jsonData };
+    // Update file on GitHub
+    const updateResponse = await fetch(githubApiUrl, {
+      method: "PUT",
+      headers: {
+        Authorization: `token ${process.env.GITHUB_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: `Updated ${fileName} via web app`,
+        content: Buffer.from(fileContent).toString("base64"),
+        sha,
+        branch,
+      }),
+    });
 
-    fs.writeFileSync(tempPath, JSON.stringify(finalData, null, 2), "utf8");
+    if (!updateResponse.ok) {
+      throw new Error(`Failed to update file: ${updateResponse.statusText}`);
+    }
 
-    const updatedData = fs.readFileSync(tempPath, "utf8");
+    const result = await updateResponse.json();
 
     return res.status(200).json({
-      message: "JSON updated successfully!",
-      updatedData: JSON.parse(updatedData),
+      message: "JSON updated successfully and pushed to GitHub!",
+      commitUrl: result.commit.html_url,
     });
   } catch (err) {
     console.error("Error updating JSON:", err);
