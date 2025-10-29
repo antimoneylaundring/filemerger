@@ -18,6 +18,10 @@
                     <label for="avatar">Choose First File:</label>
                     <input type="file" id="uploadFirstFile" accept=".xlsx, .xls, .csv" />
                 </div>
+                <select id="collectionSelect">
+                    <option value="originWebsite">Origin Website</option>
+                    <option value="categoryWebsite">Category Website</option>
+                </select>
                 <div>
                     <label for="">File Format:</label>
                     <select name="fileFormat" id="mergeTypeDropdown" class="mergeType">
@@ -26,7 +30,8 @@
                         <option value="credit_netbanking">Credit Card/Netbanking</option>
                         <option value="not_found">Not Found</option>
                         <option value="crypto">Crypto</option>
-                        <option value="investment_scam">Investment Scam</option>
+                        <option value="investment_scam">Investment Massage</option>
+                        <option value="investment_web">Investment Web</option>
                     </select>
                 </div>
                 <div class="btn-container">
@@ -56,7 +61,14 @@
 
         function showHeaders() {
             const mergeType = document.getElementById("mergeTypeDropdown").value;
-            const headers = predefinedHeaders[mergeType] || []; // Get headers based on merge type
+
+            let headers = [];
+
+            if (mergeType === "upi" || mergeType === "investment_web") {
+                headers = predefinedHeaders["upi"];
+            } else {
+                headers = predefinedHeaders[mergeType] || [];
+            }
 
             const container = document.getElementById("previewContainer");
             container.innerHTML = ""; // Clear existing content
@@ -114,6 +126,33 @@
             XLSX.writeFile(workbook, filename);
         }
 
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 1) Paste the config you copied from Firebase here:
+        const firebaseConfig = {
+            apiKey: "AIzaSyAaCg2i-71SUxN4XDqzHVfSZgelXjN1i2M",
+            authDomain: "filemerger.firebaseapp.com",
+            projectId: "filemerger",
+            storageBucket: "filemerger.firebasestorage.app",
+            messagingSenderId: "1051254278393",
+            appId: "1:1051254278393:web:8e83fcdd69de8861727a28"
+        };
+
+        // Import SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const app = initializeApp(firebaseConfig);
+        window.db = getFirestore(app);
+        window.firestoreCollection = collection;
+        window.firestoreAdd = addDoc;
+        window.firestoreGet = getDocs;
+        window.firestoreDoc = doc;
+        window.firestoreUpdate = updateDoc;
     </script>
 </body>
 

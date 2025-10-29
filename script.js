@@ -14,7 +14,7 @@ async function loadStaticJson() {
     const mergeType = document.getElementById('mergeTypeDropdown').value;
 
     let jsonFilePath = '';
-    if (mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto') {
+    if (mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' || mergeType === 'investment_web') {
         jsonFilePath = 'json/secondFile.json'; // JSON for UPI
     } else if (mergeType === 'telegram') {
         jsonFilePath = 'json/telegram_wtsp.json'; // JSON for Telegram
@@ -199,7 +199,7 @@ async function previewData() {
         let upiHandle = 'NA';
         let ifscCode = 'NA';
 
-        if (mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam') {
+        if (mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam' || mergeType === 'investment_web') {
             upiHandle = excelRow?.upi_vpa && String(excelRow.upi_vpa).includes('@')
                 ? String(excelRow.upi_vpa).split('@')[1].toLowerCase()
                 : 'NA';
@@ -235,7 +235,7 @@ async function previewData() {
 
         const dateTime = convertToDateTime(timestamp);
 
-        const origin = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' && excelRow?.website_url
+        const origin = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' || mergeType === 'investment_web' && excelRow?.website_url
             ? originWebsiteMap[excelRow.website_url]
             : 'NA'
 
@@ -250,7 +250,7 @@ async function previewData() {
             "x.com": "X"
         }
 
-        const category = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto'
+        const category = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' || mergeType === 'investment_web'
             ? (excelRow?.website_url ? categoryWebsiteMap[excelRow.website_url] : 'NA') // UPI ke liye JSON logic
             : mergeType === "investment_scam"
                 ? (() => {
@@ -272,19 +272,19 @@ async function previewData() {
                 );
                 return match ? categoryMap_Inevst_scam[match] : "NA";
             })()
-            : mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto'
+            : mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' || mergeType === 'investment_web'
                 ? 'Web'
                 : mergeType === 'telegram'
                     ? 'Messaging Channel Platforms'
                     : 'NA';
 
-        const paymentUrl = mergeType === 'upi' || mergeType === 'crypto'
+        const paymentUrl = mergeType === 'upi' || mergeType === 'crypto' || mergeType === 'investment_web'
             ? (excelRow?.payment_gateway_url || 'NA')
             : mergeType === 'credit_netbanking'
                 ? (excelRow?.destination_url || '')
                 : "NA";
 
-        const upiUrl = mergeType === 'upi' || mergeType === 'crypto'
+        const upiUrl = mergeType === 'upi' || mergeType === 'crypto' || mergeType === 'investment_web'
             ? (excelRow?.payment_gateway_url || 'NA')
             : "NA";
 
@@ -293,7 +293,7 @@ async function previewData() {
         const intermediateUrl3 = excelRow?.intermediate_url_3 ? excelRow?.intermediate_url_3 : '';
         const intermediateUrl4 = excelRow?.intermediate_url_4 ? excelRow?.intermediate_url_4 : '';
 
-        const intermediateUrls = mergeType === 'upi' || mergeType === 'crypto'
+        const intermediateUrls = mergeType === 'upi' || mergeType === 'crypto' || mergeType === 'investment_web'
             ? (excelRow?.payment_gateway_url || 'NA')
             : mergeType === 'credit_netbanking'
                 ? [intermediateUrl1, intermediateUrl2, intermediateUrl3, intermediateUrl4]
@@ -309,7 +309,7 @@ async function previewData() {
                     .join(',') // Join domains with commas
                 : '';
 
-        const paymentIntermediateUrls = mergeType === 'upi' || mergeType === 'crypto'
+        const paymentIntermediateUrls = mergeType === 'upi' || mergeType === 'crypto' || mergeType === 'investment_web'
             ? (extractDomain(excelRow?.payment_gateway_url || '') === extractDomain(excelRow?.website_url || '')
                 ? 'NA'
                 : extractDomain(excelRow?.payment_gateway_url || ''))
@@ -317,25 +317,25 @@ async function previewData() {
                 ? intermediateDomainName
                 : 'NA';
 
-        const bankAccountNumber = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam'
+        const bankAccountNumber = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam' || mergeType === 'investment_web'
             ? excelRow?.bank_account_number || ''
             : mergeType === 'credit_netbanking'
                 ? 'NA'
                 : 'NA';
 
-        const ifsc = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam'
+        const ifsc = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam' || mergeType === 'investment_web'
             ? excelRow?.ifsc_code || ''
             : mergeType === 'credit_netbanking'
                 ? 'NA'
                 : 'NA';
 
-        const upiId = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam'
+        const upiId = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam' || mergeType === 'investment_web'
             ? excelRow?.upi_vpa || ''
             : mergeType === 'credit_netbanking'
                 ? 'NA'
                 : 'NA';
 
-        const accHolderName = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam'
+        const accHolderName = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam' || mergeType === 'investment_web'
             ? excelRow?.account_holder_name
             : mergeType === "credit_netbanking"
                 ? excelRow?.account_holder_name
@@ -369,7 +369,9 @@ async function previewData() {
             ? excelRow?.contact_no
             : 'NA'
 
-
+        const feature_type = mergeType === 'upi'
+            ? "BS Money Laundering"
+            : "BS Investment Scam"
 
         return {
             ...secondFileData.sheet1Data[0], // Start with the full JSON structure as the base,
@@ -399,7 +401,8 @@ async function previewData() {
             balance_in_crypto_wallet: balance_in_crypto_wallet,
             crypto_wallet_transaction_count: crypto_wallet_transaction_count,
             web_contact_no: contact_no,
-            search_for: search_for
+            search_for: search_for,
+            feature_type: feature_type
         };
     });
 
@@ -497,6 +500,33 @@ function downloadUpdatedFile() {
     setTimeout(() => {
         location.reload(); // Reload the page after a slight delay
     }, 500);
+}
+
+async function saveWebsiteData(websiteObj) {
+    const selectedCollection = document.getElementById("collectionSelect").value;
+
+    await firestoreAdd(
+        firestoreCollection(db, selectedCollection),
+        websiteObj
+    );
+
+    alert("Data saved to: " + selectedCollection);
+}
+
+saveWebsiteData({
+    name: "Example Website",
+    url: "https://example.com"
+});
+
+async function loadWebsiteData() {
+    const selectedCollection = document.getElementById("collectionSelect").value;
+
+    const snapshot = await firestoreGet(
+        firestoreCollection(db, selectedCollection)
+    );
+
+    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    console.log(data);
 }
 
 // Load the static JSON once when the page loads
