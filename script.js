@@ -221,7 +221,7 @@ async function previewData() {
             bankName = excelRow?.bank_name || '';
         }
 
-        const upiType = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam'
+        const upiType = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam' || mergeType === 'investment_web'
             ? determineType(excelRow?.upi_vpa || '')
             : mergeType === 'credit_netbanking'
                 ? excelRow?.platform?.replace('banking', 'Banking')

@@ -8,6 +8,8 @@
     <title>File Merger Tool</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 </head>
 
 <body>
@@ -22,6 +24,7 @@
                     <option value="originWebsite">Origin Website</option>
                     <option value="categoryWebsite">Category Website</option>
                 </select>
+                <button onclick="updateFile()">Update</button>
                 <div>
                     <label for="">File Format:</label>
                     <select name="fileFormat" id="mergeTypeDropdown" class="mergeType">
@@ -134,25 +137,17 @@
     <script>
         // 1) Paste the config you copied from Firebase here:
         const firebaseConfig = {
-            apiKey: "AIzaSyAaCg2i-71SUxN4XDqzHVfSZgelXjN1i2M",
-            authDomain: "filemerger.firebaseapp.com",
-            projectId: "filemerger",
-            storageBucket: "filemerger.firebasestorage.app",
-            messagingSenderId: "1051254278393",
-            appId: "1:1051254278393:web:8e83fcdd69de8861727a28"
+            apiKey: "AIzaSyB6_Ykwt2M_uA5UDBs-dc5F0ShxYTiQZMg",
+            authDomain: "filemerger-e616a.firebaseapp.com",
+            projectId: "filemerger-e616a",
+            storageBucket: "filemerger-e616a.firebasestorage.app",
+            messagingSenderId: "218645341003",
+            appId: "1:218645341003:web:ae55d4e711095c3c1dfece",
+            measurementId: "G-J9BZ3Q1BC3"
         };
 
-        // Import SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const app = initializeApp(firebaseConfig);
-        window.db = getFirestore(app);
-        window.firestoreCollection = collection;
-        window.firestoreAdd = addDoc;
-        window.firestoreGet = getDocs;
-        window.firestoreDoc = doc;
-        window.firestoreUpdate = updateDoc;
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
     </script>
 </body>
 
