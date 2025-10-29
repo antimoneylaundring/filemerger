@@ -8,6 +8,7 @@ let ifscToBankMap = {};
 let originWebsiteMap = {};
 let categoryWebsiteMap = {};
 let isMerged = false;
+let websiteExcelData = [];
 
 async function loadStaticJson() {
     // Load the static JSON file only once
@@ -185,7 +186,7 @@ async function previewData() {
         } else if (ss_url.includes('mfilterit')) {
             npciUrl = ss_url.replace('mfilterit', 'npci');
             without_header = ss_url.replace('mfilterit', 'without_header');
-            mfilterit = ss_url 
+            mfilterit = ss_url
         } else if (ss_url.includes('without_header')) {
             npciUrl = ss_url.replace('without_header', 'npci');
             mfilterit = ss_url.replace('without_header', 'mfilterit');
@@ -528,6 +529,67 @@ async function loadWebsiteData() {
     const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     console.log(data);
 }
+
+// Event listener for website Excel file upload
+document.getElementById('websiteExcelFile').addEventListener('change', handleWebsiteExcelUpload);
+
+// Function to handle Excel file upload for website data
+async function handleWebsiteExcelUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    websiteExcelData = XLSX.utils.sheet_to_json(sheet);
+
+    console.log('Excel data loaded:', websiteExcelData);
+    alert(`Loaded ${websiteExcelData.length} rows from Excel file`);
+}
+
+// Function to update Firebase from uploaded Excel
+async function updateFirebaseFromExcel() {
+    // Check if Excel file was uploaded
+    if (websiteExcelData.length === 0) {
+        alert('Please upload an Excel file first!');
+        return;
+    }
+
+    // Get selected collection from dropdown
+    const collection = document.getElementById('collectionSelect').value;
+
+    try {
+        // Update Firebase with the Excel data
+        // Store under Sheet1 to match your JSON structure
+        await db.ref(`${collection}/Sheet1`).set(websiteExcelData);
+
+        alert(`Successfully updated ${websiteExcelData.length} records to ${collection}!`);
+
+        // Clear the data after successful upload
+        websiteExcelData = [];
+        document.getElementById('websiteExcelFile').value = '';
+
+    } catch (error) {
+        console.error('Error updating Firebase:', error);
+        alert('Error updating Firebase: ' + error.message);
+    }
+}
+
+const firebaseConfig = {
+    apiKey: "AIzaSyB6_Ykwt2M_uA5UDBs-dc5F0ShxYTiQZMg",
+    authDomain: "filemerger-e616a.firebaseapp.com",
+    projectId: "filemerger-e616a",
+    storageBucket: "filemerger-e616a.firebasestorage.app",
+    messagingSenderId: "218645341003",
+    appId: "1:218645341003:web:ae55d4e711095c3c1dfece",
+    measurementId: "G-J9BZ3Q1BC3"
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+
 
 // Load the static JSON once when the page loads
 loadStaticJson();

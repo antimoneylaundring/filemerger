@@ -8,8 +8,8 @@
     <title>File Merger Tool</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js"></script>
 </head>
 
 <body>
@@ -20,11 +20,15 @@
                     <label for="avatar">Choose First File:</label>
                     <input type="file" id="uploadFirstFile" accept=".xlsx, .xls, .csv" />
                 </div>
+                <div class="website-data-file">
+                    <label for="websiteExcelFile">Choose Website Data File (Excel):</label>
+                    <input type="file" id="websiteExcelFile" accept=".xlsx, .xls, .csv" />
+                </div>
                 <select id="collectionSelect">
                     <option value="originWebsite">Origin Website</option>
                     <option value="categoryWebsite">Category Website</option>
                 </select>
-                <button onclick="updateFile()">Update</button>
+                <button onclick="updateFirebaseFromExcel()">Update to Firebase</button>
                 <div>
                     <label for="">File Format:</label>
                     <select name="fileFormat" id="mergeTypeDropdown" class="mergeType">
@@ -51,7 +55,6 @@
         </div>
     </div>
 
-    <script src="./script.js"></script>
     <script>
         const predefinedHeaders = {
             upi: ['bank_account_number', 'ifsc_code', 'upi_vpa', 'account_holder_name', 'npci_mfilterit_without_header', 'website_url', 'payment_gateway_url', 'transaction_method'],
@@ -130,25 +133,7 @@
         }
 
     </script>
-
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-    <script>
-        // 1) Paste the config you copied from Firebase here:
-        const firebaseConfig = {
-            apiKey: "AIzaSyB6_Ykwt2M_uA5UDBs-dc5F0ShxYTiQZMg",
-            authDomain: "filemerger-e616a.firebaseapp.com",
-            projectId: "filemerger-e616a",
-            storageBucket: "filemerger-e616a.firebasestorage.app",
-            messagingSenderId: "218645341003",
-            appId: "1:218645341003:web:ae55d4e711095c3c1dfece",
-            measurementId: "G-J9BZ3Q1BC3"
-        };
-
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-    </script>
+    <script src="./script.js"></script>
 </body>
 
 </html>
