@@ -4,12 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="style.css">
     <title>File Merger Tool</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js"></script>
 </head>
 
 <body>
@@ -28,7 +26,7 @@
                     <option value="originWebsite">Origin Website</option>
                     <option value="categoryWebsite">Category Website</option>
                 </select>
-                <button onclick="updateFirebaseFromExcel()">Update to Firebase</button>
+                <button>Update to Firebase</button>
                 <div>
                     <label for="">File Format:</label>
                     <select name="fileFormat" id="mergeTypeDropdown" class="mergeType">
@@ -37,14 +35,13 @@
                         <option value="credit_netbanking">Credit Card/Netbanking</option>
                         <option value="not_found">Not Found</option>
                         <option value="crypto">Crypto</option>
-                        <option value="investment_scam">Investment Massage</option>
+                        <option value="investment_scam">Investment Message</option>
                         <option value="investment_web">Investment Web</option>
                     </select>
                 </div>
                 <div class="btn-container">
                     <Button class="preview-btn btn" id="download" onclick="downloadHeader()">Download Header</Button>
-                    <Button class="merge-preview-btn btn" id="mergeDownloadBtn" onclick="handleMergeDownload()">Merge &
-                        Preview Data</Button>
+                    <Button class="merge-preview-btn btn" id="mergeDownloadBtn" onclick="handleMergeDownload()">Merge & Preview Data</Button>
                 </div>
             </div>
             <div style="height: 65vh; margin-top: 15px;">
@@ -131,9 +128,8 @@
             const filename = `${mergeType}_headers.xlsx`;
             XLSX.writeFile(workbook, filename);
         }
-
     </script>
-    <script src="./script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>

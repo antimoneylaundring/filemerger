@@ -1,3 +1,9 @@
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabaseUrl = 'https://sofdpqvxgekluqxakjao.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvZmRwcXZ4Z2VrbHVxeGFramFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3MzQ5ODQsImV4cCI6MjA3NzMxMDk4NH0.r7dg0ubQQe6is7C-W0hH0-F7XP8uS7TJVQXsP2GZ5qQ';
+const supabase = createClient(supabaseUrl, supabaseKey)
+
 document.getElementById('uploadFirstFile').addEventListener('change', handleFileUpload);
 
 let firstFileData = [];
@@ -34,11 +40,11 @@ async function loadStaticJson() {
     const ifscBankFile = await fetch('json/ifscBankName.json');
     const ifscFileData = await ifscBankFile.json();
 
-    const originWebsite = await fetch('json/originWebsite.json');
-    const origin = await originWebsite.json();
+    // const originWebsite = await fetch('json/originWebsite.json');
+    // const origin = await originWebsite.json();
 
-    const categoryWebsite = await fetch('json/categoryWebsite.json');
-    const category = await categoryWebsite.json();
+    // const categoryWebsite = await fetch('json/categoryWebsite.json');
+    // const category = await categoryWebsite.json();
 
     // Assuming the handles and bank names are in `Sheet1`
     handleFileData.Sheet2.forEach(item => {
@@ -53,28 +59,73 @@ async function loadStaticJson() {
         }
     })
 
-    origin.Sheet1.forEach(item => {
-        if (item.url && item.origin) {
-            originWebsiteMap[item.url] = item.origin;
-        }
-    })
+    // origin.Sheet1.forEach(item => {
+    //     if (item.url && item.origin) {
+    //         originWebsiteMap[item.url] = item.origin;
+    //     }
+    // })
 
-    category.Sheet1.forEach(item => {
-        if (item.url && item.category) {
-            categoryWebsiteMap[item.url] = item.category;
-        }
-    })
+    // category.Sheet1.forEach(item => {
+    //     if (item.url && item.category) {
+    //         categoryWebsiteMap[item.url] = item.category;
+    //     }
+    // })
+
+    originWebsiteMap = await fetchOriginFromSupabase();
+    categoryWebsiteMap = await fetchCategoryFromSupabase();
+
 
     const sheet1Data = secondFileData.Sheet1; // All objects from Sheet1
     const sheet2Data = handleFileData.sheet2; // All objects from sheet2
     const sheet3Data = ifscFileData.sheet3;
-    const sheet4Data = origin.sheet1;
-    const sheet5Data = category.sheet1;
+    // const sheet4Data = origin.sheet1;
+    // const sheet5Data = category.sheet1;
+    const sheet4Data = originWebsiteMap.sheet1;
+    const sheet5Data = categoryWebsiteMap.sheet1;
 
-    secondFileData = { sheet1Data, sheet2Data, sheet3Data, sheet4Data, sheet5Data };
+    // secondFileData = { sheet1Data, sheet2Data, sheet3Data, sheet4Data, sheet5Data };
+    secondFileData = { sheet1Data, sheet2Data, sheet3Data };
 
     return secondFileData;
 }
+
+async function fetchAllRows(tableName) {
+    let allRows = [];
+    let batchSize = 1000;
+    let start = 0;
+    let hasMore = true;
+    while (hasMore) {
+        const { data, error } = await supabase
+            .from(tableName)
+            .select('*')
+            .range(start, start + batchSize - 1);
+        if (error) { console.error(error); break; }
+        allRows = allRows.concat(data);
+        hasMore = data.length === batchSize;
+        start += batchSize;
+    }
+    return allRows;
+}
+
+
+async function fetchOriginFromSupabase() {
+    const rows = await fetchAllRows('originWebsite');
+    const originWebsiteMap = {};
+    rows.forEach(row => {
+        originWebsiteMap[row.url] = row.origin;
+    });
+    return originWebsiteMap;
+}
+
+async function fetchCategoryFromSupabase() {
+    const rows = await fetchAllRows('categoryWebsite');
+    const categoryWebsiteMap = {};
+    rows.forEach(row => {
+        categoryWebsiteMap[row.url] = row.category;
+    });
+    return categoryWebsiteMap;
+}
+
 
 async function handleFileUpload(event) {
     const file = event.target.files[0];
@@ -236,9 +287,35 @@ async function previewData() {
 
         const dateTime = convertToDateTime(timestamp);
 
-        const origin = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' || mergeType === 'investment_web' && excelRow?.website_url
-            ? originWebsiteMap[excelRow.website_url]
-            : 'NA'
+        function normalize(url) {
+            return (url || '')
+                .toLowerCase()
+                .trim()
+                .replace(/^https?:\/\//, '')
+                .replace(/^www\./, '')
+                .replace(/\/$/, '');
+        }
+
+        // const origin = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' || mergeType === 'investment_web'
+        //     ? (originWebsiteMap[excelRow.website_url] || 'NA')
+        //     : 'NA'
+
+        const origin =
+            (mergeType === 'upi' ||
+                mergeType === 'credit_netbanking' ||
+                mergeType === 'not_found' ||
+                mergeType === 'crypto' ||
+                mergeType === 'investment_web')
+                ? (
+                    (() => {
+                        const cleanUrl = normalize(excelRow.website_url);
+                        const foundKey = Object.keys(originWebsiteMap).find(key =>
+                            normalize(key) === cleanUrl
+                        );
+                        return foundKey ? originWebsiteMap[foundKey] : 'NA';
+                    })()
+                )
+                : 'NA';
 
         const categoryMap_Inevst_scam = {
             "t.me": "Telegram",
@@ -251,19 +328,46 @@ async function previewData() {
             "x.com": "X"
         }
 
-        const category = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' || mergeType === 'investment_web'
-            ? (excelRow?.website_url ? categoryWebsiteMap[excelRow.website_url] : 'NA') // UPI ke liye JSON logic
-            : mergeType === "investment_scam"
-                ? (() => {
-                    const url = excelRow?.website_url || "";
-                    const match = Object.keys(categoryMap_Inevst_scam).find((domain) =>
-                        url.includes(domain)
-                    );
-                    return match ? categoryMap_Inevst_scam[match] : "NA";
-                })()
-                : mergeType === 'telegram'
-                    ? excelRow?.category
-                    : 'NA';
+        // const category = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' || mergeType === 'investment_web'
+        //     ? (excelRow?.website_url ? categoryWebsiteMap[excelRow.website_url] : 'NA') // UPI ke liye JSON logic
+        //     : mergeType === "investment_scam"
+        //         ? (() => {
+        //             const url = excelRow?.website_url || "";
+        //             const match = Object.keys(categoryMap_Inevst_scam).find((domain) =>
+        //                 url.includes(domain)
+        //             );
+        //             return match ? categoryMap_Inevst_scam[match] : "NA";
+        //         })()
+        //         : mergeType === 'telegram'
+        //             ? excelRow?.category
+        //             : 'NA';
+
+        const category =
+            (mergeType === 'upi' ||
+                mergeType === 'credit_netbanking' ||
+                mergeType === 'not_found' ||
+                mergeType === 'crypto' ||
+                mergeType === 'investment_web')
+                ? (
+                    (() => {
+                        const cleanUrl = normalize(excelRow.website_url);
+                        const foundKey = Object.keys(categoryWebsiteMap).find(key =>
+                            normalize(key) === cleanUrl
+                        );
+                        return foundKey ? categoryWebsiteMap[foundKey] : 'NA';
+                    })()
+                )
+                : mergeType === "investment_scam"
+                    ? (() => {
+                        const url = normalize(excelRow?.website_url || "");
+                        const match = Object.keys(categoryMap_Inevst_scam).find((domain) =>
+                            url.includes(domain)
+                        );
+                        return match ? categoryMap_Inevst_scam[match] : "NA";
+                    })()
+                    : mergeType === 'telegram'
+                        ? excelRow?.category
+                        : 'NA';
 
         const search_for = mergeType === 'investment_scam'
             ? (() => {
@@ -421,6 +525,8 @@ async function previewData() {
 //     }, 500);
 // }
 
+window.handleMergeDownload = handleMergeDownload;
+
 async function handleMergeDownload() {
     const button = document.getElementById('mergeDownloadBtn');
 
@@ -503,92 +609,38 @@ function downloadUpdatedFile() {
     }, 500);
 }
 
-async function saveWebsiteData(websiteObj) {
-    const selectedCollection = document.getElementById("collectionSelect").value;
+async function uploadOriginData(jsonArray) {
+    const formatted = jsonArray.map(row => ({
+        url: row.url.trim(),
+        origin: row.origin.trim()
+    }));
 
-    await firestoreAdd(
-        firestoreCollection(db, selectedCollection),
-        websiteObj
-    );
+    const { error } = await supabase.from('originWebsite').insert(formatted);
 
-    alert("Data saved to: " + selectedCollection);
-}
-
-saveWebsiteData({
-    name: "Example Website",
-    url: "https://example.com"
-});
-
-async function loadWebsiteData() {
-    const selectedCollection = document.getElementById("collectionSelect").value;
-
-    const snapshot = await firestoreGet(
-        firestoreCollection(db, selectedCollection)
-    );
-
-    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log(data);
-}
-
-// Event listener for website Excel file upload
-document.getElementById('websiteExcelFile').addEventListener('change', handleWebsiteExcelUpload);
-
-// Function to handle Excel file upload for website data
-async function handleWebsiteExcelUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const data = await file.arrayBuffer();
-    const workbook = XLSX.read(data, { type: 'array' });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    websiteExcelData = XLSX.utils.sheet_to_json(sheet);
-
-    console.log('Excel data loaded:', websiteExcelData);
-    alert(`Loaded ${websiteExcelData.length} rows from Excel file`);
-}
-
-// Function to update Firebase from uploaded Excel
-async function updateFirebaseFromExcel() {
-    // Check if Excel file was uploaded
-    if (websiteExcelData.length === 0) {
-        alert('Please upload an Excel file first!');
-        return;
-    }
-
-    // Get selected collection from dropdown
-    const collection = document.getElementById('collectionSelect').value;
-
-    try {
-        // Update Firebase with the Excel data
-        // Store under Sheet1 to match your JSON structure
-        await db.ref(`${collection}/Sheet1`).set(websiteExcelData);
-
-        alert(`Successfully updated ${websiteExcelData.length} records to ${collection}!`);
-
-        // Clear the data after successful upload
-        websiteExcelData = [];
-        document.getElementById('websiteExcelFile').value = '';
-
-    } catch (error) {
-        console.error('Error updating Firebase:', error);
-        alert('Error updating Firebase: ' + error.message);
+    if (error) {
+        alert('Error uploading Origin Data: ' + error.message);
+    } else {
+        alert('Origin Website Data Uploaded Successfully!');
     }
 }
 
-const firebaseConfig = {
-    apiKey: "AIzaSyB6_Ykwt2M_uA5UDBs-dc5F0ShxYTiQZMg",
-    authDomain: "filemerger-e616a.firebaseapp.com",
-    projectId: "filemerger-e616a",
-    storageBucket: "filemerger-e616a.firebasestorage.app",
-    messagingSenderId: "218645341003",
-    appId: "1:218645341003:web:ae55d4e711095c3c1dfece",
-    measurementId: "G-J9BZ3Q1BC3"
-};
+async function uploadCategoryData(jsonArray) {
+    const formatted = jsonArray.map(row => ({
+        url: row.url.trim(),
+        category: row.category.trim()
+    }));
 
-// Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+    const { error } = await supabase.from('categoryWebsite').insert(formatted);
 
+    if (error) {
+        alert('Error uploading Category Data: ' + error.message);
+    } else {
+        alert('Category Website Data Uploaded Successfully!');
+    }
+}
+
+// uploadOriginData(firstFileData);
+// uploadCategoryData(firstFileData);
 
 
 // Load the static JSON once when the page loads
