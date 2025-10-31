@@ -474,9 +474,9 @@ async function previewData() {
             ? excelRow?.contact_no
             : 'NA'
 
-        const feature_type = mergeType === 'upi'
-            ? "BS Money Laundering"
-            : "BS Investment Scam"
+        const feature_type = mergeType === 'investment_scam'
+            ? "BS Investment Scam"
+            : "BS Money Laundering"
 
         return {
             ...secondFileData.sheet1Data[0], // Start with the full JSON structure as the base,
