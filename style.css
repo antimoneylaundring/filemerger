@@ -118,3 +118,27 @@ select {
     background: #5a5693;
     color: #fff;
 }
+
+.website-select-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+#headerPreview {
+    display: flex;
+    gap: 8px;
+}
+
+/* Optional: Make chips nicer */
+.header-chip {
+    display: inline-block;
+    background: #5a5693;
+    color: #fff;
+    padding: 6px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+}
+

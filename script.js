@@ -369,7 +369,7 @@ async function previewData() {
                         : mergeType === 'investment_web'
                             ? 'Investment'
                             : "NA";
-                    
+
         const search_for = mergeType === 'investment_scam'
             ? (() => {
                 const url = excelRow?.website_url || "";
@@ -601,39 +601,103 @@ function downloadUpdatedFile() {
     }, 500);
 }
 
-async function uploadOriginData(jsonArray) {
-    const formatted = jsonArray.map(row => ({
-        url: row.url.trim(),
-        origin: row.origin.trim()
-    }));
+function normalize(url) {
+    return (url || '')
+        .toLowerCase()
+        .trim()
+        .replace(/^https?:\/\//, '')
+        .replace(/^www\./, '')
+        .replace(/\/$/, '');
+}
 
-    const { error } = await supabase.from('originWebsite').insert(formatted);
+// XLSX and Supabase CDN must be loaded
+document.getElementById('updateButton').addEventListener('click', handleUpdateDB);
+
+async function handleUpdateDB() {
+    const fileInput = document.getElementById('websiteExcelFile');
+    const collection = document.getElementById('collectionSelect').value;
+
+    if (!fileInput.files[0]) {
+        alert('Please select a file first!');
+        return;
+    }
+
+    // Read file as array buffer
+    const data = await fileInput.files[0].arrayBuffer();
+    const workbook = XLSX.read(data, { type: 'array' });
+    const firstSheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[firstSheetName];
+    const rows = XLSX.utils.sheet_to_json(sheet);
+
+    // 1. Fetch all existing URLs from Supabase table, for fast duplicate check
+    let allExisting = [];
+    let start = 0, batchSize = 1000, hasMore = true;
+    while (hasMore) {
+        const { data, error } = await supabase
+            .from(collection)
+            .select('url')
+            .range(start, start + batchSize - 1);
+        if (error) { alert('Error fetching existing data'); return; }
+        if (data) allExisting = allExisting.concat(data);
+        hasMore = (data && data.length === batchSize);
+        start += batchSize;
+    }
+
+    const existingUrlsSet = new Set(allExisting.map(item => normalize(item.url)));
+
+    // 2. Format for DB, and filter out duplicates
+    let formattedRows;
+    if (collection === "originWebsite") {
+        formattedRows = rows
+            .filter(row => !existingUrlsSet.has(normalize(row.url)))
+            .map(row => ({
+                url: String(row.url).trim(),
+                origin: String(row.origin).trim()
+            }));
+    } else if (collection === "categoryWebsite") {
+        formattedRows = rows
+            .filter(row => !existingUrlsSet.has(normalize(row.url)))
+            .map(row => ({
+                url: String(row.url).trim(),
+                category: String(row.category).trim()
+            }));
+    } else {
+        alert('Unknown table selected');
+        return;
+    }
+
+    if (formattedRows.length === 0) {
+        alert('All URLs already exist! No new unique rows to import.');
+        return;
+    }
+
+    // 3. Insert to Supabase
+    const { error } = await supabase.from(collection).insert(formattedRows);
 
     if (error) {
-        alert('Error uploading Origin Data: ' + error.message);
+        alert('Error updating Supabase: ' + error.message);
     } else {
-        alert('Origin Website Data Uploaded Successfully!');
+        alert(`Imported ${formattedRows.length} NEW unique rows into ${collection}!`);
+        fileInput.value = '';
     }
 }
 
-async function uploadCategoryData(jsonArray) {
-    const formatted = jsonArray.map(row => ({
-        url: row.url.trim(),
-        category: row.category.trim()
-    }));
-
-    const { error } = await supabase.from('categoryWebsite').insert(formatted);
-
-    if (error) {
-        alert('Error uploading Category Data: ' + error.message);
-    } else {
-        alert('Category Website Data Uploaded Successfully!');
+function showImportHeaders() {
+    const collection = document.getElementById("collectionSelect").value;
+    const headerDiv = document.getElementById("headerPreview");
+    let headers = [];
+    if (collection === "originWebsite") {
+        headers = ["url", "origin"];
+    } else if (collection === "categoryWebsite") {
+        headers = ["url", "category"];
     }
+    headerDiv.innerHTML = headers
+        .map(h => `<span class="header-chip">${h}</span>`)
+        .join('');
 }
 
-// uploadOriginData(firstFileData);
-// uploadCategoryData(firstFileData);
-
+document.getElementById("collectionSelect").addEventListener("change", showImportHeaders);
+window.addEventListener("DOMContentLoaded", showImportHeaders);
 
 // Load the static JSON once when the page loads
 loadStaticJson();
