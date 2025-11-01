@@ -346,8 +346,7 @@ async function previewData() {
             (mergeType === 'upi' ||
                 mergeType === 'credit_netbanking' ||
                 mergeType === 'not_found' ||
-                mergeType === 'crypto' ||
-                mergeType === 'investment_web')
+                mergeType === 'crypto')
                 ? (
                     (() => {
                         const cleanUrl = normalize(excelRow.website_url);
@@ -367,8 +366,10 @@ async function previewData() {
                     })()
                     : mergeType === 'telegram'
                         ? excelRow?.category
-                        : 'NA';
-
+                        : mergeType === 'investment_web'
+                            ? 'Investment'
+                            : "NA";
+                    
         const search_for = mergeType === 'investment_scam'
             ? (() => {
                 const url = excelRow?.website_url || "";
@@ -474,7 +475,7 @@ async function previewData() {
             ? excelRow?.contact_no
             : 'NA'
 
-        const feature_type = mergeType === 'investment_scam'
+        const feature_type = mergeType === 'investment_web'
             ? "BS Investment Scam"
             : "BS Money Laundering"
 
