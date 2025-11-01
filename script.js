@@ -516,15 +516,6 @@ async function previewData() {
     return true;
 }
 
-// async function mergeAndDownload() {
-//     const success = await previewData();
-//     if (!success) return; // Stop if preview failed
-
-//     setTimeout(() => {
-//         downloadUpdatedFile();
-//     }, 500);
-// }
-
 window.handleMergeDownload = handleMergeDownload;
 
 async function handleMergeDownload() {

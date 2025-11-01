@@ -18,15 +18,19 @@
                     <label for="avatar">Choose First File:</label>
                     <input type="file" id="uploadFirstFile" accept=".xlsx, .xls, .csv" />
                 </div>
-                <div class="website-data-file">
-                    <label for="websiteExcelFile">Choose Website Data File (Excel):</label>
-                    <input type="file" id="websiteExcelFile" accept=".xlsx, .xls, .csv" />
+                <div class="website-form-container">
+                    <div class="website-data-file">
+                        <label for="websiteExcelFile">Choose Origin & Category:</label>
+                        <input type="file" id="websiteExcelFile" accept=".xlsx, .xls, .csv" />
+                    </div>
+                    <div class="website-select-actions">
+                        <select id="collectionSelect">
+                            <option value="originWebsite">Origin</option>
+                            <option value="categoryWebsite">Category</option>
+                        </select>
+                        <button class="update_btn">Update</button>
+                    </div>
                 </div>
-                <select id="collectionSelect">
-                    <option value="originWebsite">Origin Website</option>
-                    <option value="categoryWebsite">Category Website</option>
-                </select>
-                <button>Update to Firebase</button>
                 <div>
                     <label for="">File Format:</label>
                     <select name="fileFormat" id="mergeTypeDropdown" class="mergeType">
@@ -41,7 +45,8 @@
                 </div>
                 <div class="btn-container">
                     <Button class="preview-btn btn" id="download" onclick="downloadHeader()">Download Header</Button>
-                    <Button class="merge-preview-btn btn" id="mergeDownloadBtn" onclick="handleMergeDownload()">Merge & Preview Data</Button>
+                    <Button class="merge-preview-btn btn" id="mergeDownloadBtn" onclick="handleMergeDownload()">Merge &
+                        Preview Data</Button>
                 </div>
             </div>
             <div style="height: 65vh; margin-top: 15px;">
