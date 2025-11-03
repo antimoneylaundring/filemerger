@@ -519,27 +519,6 @@ async function previewData() {
 
 window.handleMergeDownload = handleMergeDownload;
 
-async function handleMergeDownload() {
-    const button = document.getElementById('mergeDownloadBtn');
-
-    if (!isMerged) {
-        const success = await previewData();
-        if (!success) return;
-
-        isMerged = true;
-        button.textContent = 'Download';
-        button.classList.add('ready-to-download');
-    }
-
-    else {
-        downloadUpdatedFile();
-        setTimeout(() => {
-            button.textContent = 'Merge & Preview Data';
-            isMerged = false;
-        }, 1500);
-    }
-}
-
 function displayPreview(data) {
     const container = document.getElementById("previewContainer");
     container.innerHTML = "";
@@ -698,6 +677,40 @@ function showImportHeaders() {
 
 document.getElementById("collectionSelect").addEventListener("change", showImportHeaders);
 window.addEventListener("DOMContentLoaded", showImportHeaders);
+
+async function handleMergeDownload() {
+    showProgressBar(); // SHOW BAR as soon as merge starts!
+    try {
+        const button = document.getElementById('mergeDownloadBtn');
+        if (!isMerged) {
+            const success = await previewData();
+            if (!success) {
+                hideProgressBar();
+                return;
+            }
+            isMerged = true;
+            button.textContent = 'Download';
+            button.classList.add('ready-to-download');
+        } else {
+            downloadUpdatedFile();
+            setTimeout(() => {
+                button.textContent = 'Merge & Preview Data';
+                isMerged = false;
+            }, 1500);
+        }
+    } finally {
+        hideProgressBar(); // HIDE BAR as soon as merge/preview completes!
+    }
+}
+
+
+function showProgressBar() {
+    document.getElementById("top-progress-bar").style.display = "block";
+}
+function hideProgressBar() {
+    document.getElementById("top-progress-bar").style.display = "none";
+}
+
 
 // Load the static JSON once when the page loads
 loadStaticJson();

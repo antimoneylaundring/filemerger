@@ -142,3 +142,19 @@ select {
     letter-spacing: 0.5px;
 }
 
+@keyframes progressBarStripes {
+  0% { background-position: 200% 0; }
+  100% { background-position: 0 0; }
+}
+
+#top-progress-bar {
+  display: none;
+  width: 100vw;
+  height: 5px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2000;
+  background: #4c4974; /* Your solid color */
+}
+
