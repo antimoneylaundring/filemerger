@@ -475,7 +475,7 @@ async function previewData() {
             ? excelRow?.contact_no
             : 'NA'
 
-        const feature_type = mergeType === 'investment_web'
+        const feature_type = mergeType === 'investment_web' || mergeType === 'investment_scam'
             ? "BS Investment Scam"
             : "BS Money Laundering"
 
