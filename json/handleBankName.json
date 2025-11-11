@@ -1903,6 +1903,78 @@
         {
             "Handle": "mycggb",
             "Bank_name": "Chaitanya Godavari Grameena Bank"
+        },
+        {
+            "Handle": "pineaxis",
+            "Bank_name": "Axis Bank"
+        },
+        {
+            "Handle": "psbank",
+            "Bank_name": "Punjab & Sind Bank"
+        },
+        {
+            "Handle": "kbi",
+            "Bank_name": "Karnataka Bank"
+        },
+        {
+            "Handle": "cashfreensdlpb",
+            "Bank_name": "NSDL Payments Bank Limited"
+        },
+        {
+            "Handle": "phonepe",
+            "Bank_name": "None"
+        },
+        {
+            "Handle": "nyes",
+            "Bank_name": "Andhra Bank"
+        },
+        {
+            "Handle": "yescred",
+            "Bank_name": "YES BANK"
+        },
+        {
+            "Handle": "bpunity",
+            "Bank_name": "Bank of Baroda"
+        },
+        {
+            "Handle": "unitype",
+            "Bank_name": "Unity Small finance Bank Limited"
+        },
+        {
+            "Handle": "slc",
+            "Bank_name": "Uttarakhand Gramin Bank"
+        },
+        {
+            "Handle": "jiopay",
+            "Bank_name": "Jio Payments Bank"
+        },
+        {
+            "Handle": "ypbiz",
+            "Bank_name": "YES BANK"
+        },
+        {
+            "Handle": "mswipesbm",
+            "Bank_name": "SBM Bank India"
+        },
+        {
+            "Handle": "jkgrameen",
+            "Bank_name": "J&K Grameen Bank"
+        },
+        {
+            "Handle": "rxaxis",
+            "Bank_name": "Axis Bank"
+        },
+        {
+            "Handle": "idbipay",
+            "Bank_name": "IDBI Bank"
+        },
+        {
+            "Handle": "mufin",
+            "Bank_name": "None"
+        },
+        {
+            "Handle": "indusind",
+            "Bank_name": "Kotak Mahindra Bank"
         }
     ]
 }
