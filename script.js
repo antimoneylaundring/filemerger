@@ -346,7 +346,7 @@ async function previewData() {
             (mergeType === 'upi' ||
                 mergeType === 'credit_netbanking' ||
                 mergeType === 'not_found' ||
-                mergeType === 'crypto')
+                mergeType === 'crypto' || mergeType === 'investment_web')
                 ? (
                     (() => {
                         const cleanUrl = normalize(excelRow.website_url);
@@ -366,9 +366,7 @@ async function previewData() {
                     })()
                     : mergeType === 'telegram'
                         ? excelRow?.category
-                        : mergeType === 'investment_web'
-                            ? 'Investment'
-                            : "NA";
+                        : "NA"
 
         const search_for = mergeType === 'investment_scam'
             ? (() => {
