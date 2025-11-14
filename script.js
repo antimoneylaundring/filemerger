@@ -296,10 +296,6 @@ async function previewData() {
                 .replace(/\/$/, '');
         }
 
-        // const origin = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' || mergeType === 'investment_web'
-        //     ? (originWebsiteMap[excelRow.website_url] || 'NA')
-        //     : 'NA'
-
         const origin =
             (mergeType === 'upi' ||
                 mergeType === 'credit_netbanking' ||
@@ -327,21 +323,7 @@ async function previewData() {
             "youtube.com": "YouTube",
             "x.com": "X"
         }
-
-        // const category = mergeType === 'upi' || mergeType === 'credit_netbanking' || mergeType === 'not_found' || mergeType === 'crypto' || mergeType === 'investment_web'
-        //     ? (excelRow?.website_url ? categoryWebsiteMap[excelRow.website_url] : 'NA') // UPI ke liye JSON logic
-        //     : mergeType === "investment_scam"
-        //         ? (() => {
-        //             const url = excelRow?.website_url || "";
-        //             const match = Object.keys(categoryMap_Inevst_scam).find((domain) =>
-        //                 url.includes(domain)
-        //             );
-        //             return match ? categoryMap_Inevst_scam[match] : "NA";
-        //         })()
-        //         : mergeType === 'telegram'
-        //             ? excelRow?.category
-        //             : 'NA';
-
+        
         const category =
             (mergeType === 'upi' ||
                 mergeType === 'credit_netbanking' ||
