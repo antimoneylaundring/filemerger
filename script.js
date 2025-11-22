@@ -328,7 +328,7 @@ async function previewData() {
             (mergeType === 'upi' ||
                 mergeType === 'credit_netbanking' ||
                 mergeType === 'not_found' ||
-                mergeType === 'crypto' || mergeType === 'investment_web')
+                mergeType === 'crypto')
                 ? (
                     (() => {
                         const cleanUrl = normalize(excelRow.website_url);
@@ -338,14 +338,8 @@ async function previewData() {
                         return foundKey ? categoryWebsiteMap[foundKey] : 'NA';
                     })()
                 )
-                : mergeType === "investment_scam"
-                    ? (() => {
-                        const url = normalize(excelRow?.website_url || "");
-                        const match = Object.keys(categoryMap_Inevst_scam).find((domain) =>
-                            url.includes(domain)
-                        );
-                        return match ? categoryMap_Inevst_scam[match] : "NA";
-                    })()
+                : (mergeType === "investment_scam" || mergeType === "investment_web")
+                    ? (excelRow?.category || '')
                     : mergeType === 'telegram'
                         ? excelRow?.category
                         : "NA"
@@ -488,7 +482,8 @@ async function previewData() {
             crypto_wallet_transaction_count: crypto_wallet_transaction_count,
             web_contact_no: contact_no,
             search_for: search_for,
-            feature_type: feature_type
+            feature_type: feature_type,
+            scam_type: category
         };
     });
 
