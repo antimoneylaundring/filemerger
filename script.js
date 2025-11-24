@@ -338,11 +338,12 @@ async function previewData() {
                         return foundKey ? categoryWebsiteMap[foundKey] : 'NA';
                     })()
                 )
-                : (mergeType === "investment_scam" || mergeType === "investment_web")
-                    ? (excelRow?.category || '')
-                    : mergeType === 'telegram'
-                        ? excelRow?.category
-                        : "NA"
+                :"NA";
+                // : (mergeType === "investment_scam" || mergeType === "investment_web")
+                //     ? (excelRow?.category || '')
+                //     : mergeType === 'telegram'
+                //         ? excelRow?.category
+                //         : "NA"
 
         const search_for = mergeType === 'investment_scam'
             ? (() => {
@@ -452,6 +453,10 @@ async function previewData() {
         const feature_type = mergeType === 'investment_web' || mergeType === 'investment_scam'
             ? "BS Investment Scam"
             : "BS Money Laundering"
+        
+        const scam_type = mergeType === 'investment_scam' || mergeType === 'investment_web'
+            ? (excelRow?.category || '')
+            : "NA"
 
         return {
             ...secondFileData.sheet1Data[0], // Start with the full JSON structure as the base,
@@ -483,7 +488,7 @@ async function previewData() {
             web_contact_no: contact_no,
             search_for: search_for,
             feature_type: feature_type,
-            scam_type: category
+            scam_type: scam_type
         };
     });
 
