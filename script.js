@@ -456,7 +456,7 @@ async function previewData() {
         
         const scam_type = mergeType === 'investment_scam' || mergeType === 'investment_web'
             ? (excelRow?.category || '')
-            : "NA"
+            : ""
 
         return {
             ...secondFileData.sheet1Data[0], // Start with the full JSON structure as the base,
