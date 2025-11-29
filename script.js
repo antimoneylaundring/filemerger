@@ -314,7 +314,7 @@ async function previewData() {
                         return foundKey ? originCategoryMap[foundKey].origin : 'NA';
                     })()
                 )
-                : 'NA';
+                : "NA";
 
         const categoryMap_Inevst_scam = {
             "t.me": "Telegram",
@@ -341,12 +341,11 @@ async function previewData() {
                         return foundKey ? originCategoryMap[foundKey].Category : 'NA';
                     })()
                 )
-                : "NA";
-        // : (mergeType === "investment_scam" || mergeType === "investment_web")
-        //     ? (excelRow?.category || '')
-        //     : mergeType === 'telegram'
-        //         ? excelRow?.category
-        //         : "NA"
+                : (mergeType === "investment_scam" || mergeType === "investment_web")
+                    ? (excelRow?.category || '')
+                    : mergeType === 'telegram'
+                        ? excelRow?.category
+                        : "NA"
 
         const search_for = mergeType === 'investment_scam'
             ? (() => {
