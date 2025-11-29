@@ -564,12 +564,23 @@ function downloadUpdatedFile() {
 }
 
 function normalize(url) {
+    if (!url) return "";
+
+    // If url is not a string, convert it
+    if (typeof url !== "string") {
+        url = String(url);
+    }
+
     return (url || '')
-        .toLowerCase()
         .trim()
         .replace(/^https?:\/\//, '')
         .replace(/^www\./, '')
         .replace(/\/$/, '');
+}
+
+function setStatus(message) {
+    const statusBox = document.getElementById("importStatus");
+    if (statusBox) statusBox.innerText = message;
 }
 
 // XLSX and Supabase CDN must be loaded
@@ -584,12 +595,16 @@ async function handleUpdateDB() {
         return;
     }
 
+    setStatus("Reading Excel file...");
+
     // Read file
     const data = await fileInput.files[0].arrayBuffer();
     const workbook = XLSX.read(data, { type: 'array' });
     const firstSheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[firstSheetName];
     const rows = XLSX.utils.sheet_to_json(sheet);
+
+    console.log("Total Excel rows loaded:", rows.length);
 
     // Fetch all existing URLs
     let allExisting = [];
@@ -621,11 +636,15 @@ async function handleUpdateDB() {
             origin: row.Origin ? String(row.Origin).trim() : null,
             Category: row.Category ? String(row.Category).trim() : null
         }));
+    
+    console.log("Rows to insert in DB:", formattedRows.length);
 
     if (formattedRows.length === 0) {
         alert('All URLs already exist! No new unique rows to import.');
         return;
     }
+
+    setStatus("Importing data into database...");
 
     // Insert to Supabase
     const { error } = await supabase.from(collection).insert(formattedRows);
@@ -637,24 +656,6 @@ async function handleUpdateDB() {
         fileInput.value = '';
     }
 }
-
-
-function showImportHeaders() {
-    const collection = document.getElementById("collectionSelect").value;
-    const headerDiv = document.getElementById("headerPreview");
-    let headers = [];
-    if (collection === "originWebsite") {
-        headers = ["url", "origin"];
-    } else if (collection === "categoryWebsite") {
-        headers = ["url", "category"];
-    }
-    headerDiv.innerHTML = headers
-        .map(h => `<span class="header-chip">${h}</span>`)
-        .join('');
-}
-
-document.getElementById("collectionSelect").addEventListener("change", showImportHeaders);
-window.addEventListener("DOMContentLoaded", showImportHeaders);
 
 async function handleMergeDownload() {
     showProgressBar(); // SHOW BAR as soon as merge starts!
