@@ -21,20 +21,15 @@
                 </div>
                 <div class="website-form-container">
                     <div class="website-data-file">
-                        <label for="websiteExcelFile">Choose Origin & Category:</label>
+                        <label for="websiteExcelFile">Choose Origin & Category File:</label>
                         <input type="file" id="websiteExcelFile" accept=".xlsx, .xls, .csv" />
                     </div>
-                    <div class="website-select-actions">
-                        <div id="headerPreview"></div>
-                        <div class="website-select-actions" style="display:flex; gap:12px; align-items: center;">
-                            <select id="collectionSelect">
-                                <option value="originWebsite">Origin</option>
-                                <option value="categoryWebsite">Category</option>
-                            </select>
-                            <button id="updateButton" class="update_btn">Add</button>
-                        </div>
+
+                    <div class="website-select-actions" style="display:flex; gap:12px; align-items:center;">
+                        <button id="updateButton" class="update_btn">Update</button>
                     </div>
                 </div>
+
                 <div>
                     <label for="">File Format:</label>
                     <select name="fileFormat" id="mergeTypeDropdown" class="mergeType">

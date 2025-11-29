@@ -11,7 +11,7 @@ let secondFileData = {};
 let mergedData = [];
 let handleToBankMap = {};
 let ifscToBankMap = {};
-let originWebsiteMap = {};
+let originCategoryMap = {};
 let categoryWebsiteMap = {};
 let isMerged = false;
 let websiteExcelData = [];
@@ -71,7 +71,7 @@ async function loadStaticJson() {
     //     }
     // })
 
-    originWebsiteMap = await fetchOriginFromSupabase();
+    originCategoryMap = await fetchOriginFromSupabase();
     categoryWebsiteMap = await fetchCategoryFromSupabase();
 
 
@@ -80,7 +80,7 @@ async function loadStaticJson() {
     const sheet3Data = ifscFileData.sheet3;
     // const sheet4Data = origin.sheet1;
     // const sheet5Data = category.sheet1;
-    const sheet4Data = originWebsiteMap.sheet1;
+    const sheet4Data = originCategoryMap.sheet1;
     const sheet5Data = categoryWebsiteMap.sheet1;
 
     // secondFileData = { sheet1Data, sheet2Data, sheet3Data, sheet4Data, sheet5Data };
@@ -112,7 +112,10 @@ async function fetchOriginFromSupabase() {
     const rows = await fetchAllRows('originWebsite');
     const originWebsiteMap = {};
     rows.forEach(row => {
-        originWebsiteMap[row.url] = row.origin;
+        originWebsiteMap[row.url] = {
+            origin: row.origin || null,
+            Category: row.Category || null
+        }
     });
     return originWebsiteMap;
 }
@@ -305,10 +308,10 @@ async function previewData() {
                 ? (
                     (() => {
                         const cleanUrl = normalize(excelRow.website_url);
-                        const foundKey = Object.keys(originWebsiteMap).find(key =>
+                        const foundKey = Object.keys(originCategoryMap).find(key =>
                             normalize(key) === cleanUrl
                         );
-                        return foundKey ? originWebsiteMap[foundKey] : 'NA';
+                        return foundKey ? originCategoryMap[foundKey].origin : 'NA';
                     })()
                 )
                 : 'NA';
@@ -323,7 +326,7 @@ async function previewData() {
             "youtube.com": "YouTube",
             "x.com": "X"
         }
-        
+
         const category =
             (mergeType === 'upi' ||
                 mergeType === 'credit_netbanking' ||
@@ -332,18 +335,18 @@ async function previewData() {
                 ? (
                     (() => {
                         const cleanUrl = normalize(excelRow.website_url);
-                        const foundKey = Object.keys(categoryWebsiteMap).find(key =>
+                        const foundKey = Object.keys(originCategoryMap).find(key =>
                             normalize(key) === cleanUrl
                         );
-                        return foundKey ? categoryWebsiteMap[foundKey] : 'NA';
+                        return foundKey ? originCategoryMap[foundKey].Category : 'NA';
                     })()
                 )
-                :"NA";
-                // : (mergeType === "investment_scam" || mergeType === "investment_web")
-                //     ? (excelRow?.category || '')
-                //     : mergeType === 'telegram'
-                //         ? excelRow?.category
-                //         : "NA"
+                : "NA";
+        // : (mergeType === "investment_scam" || mergeType === "investment_web")
+        //     ? (excelRow?.category || '')
+        //     : mergeType === 'telegram'
+        //         ? excelRow?.category
+        //         : "NA"
 
         const search_for = mergeType === 'investment_scam'
             ? (() => {
@@ -453,7 +456,7 @@ async function previewData() {
         const feature_type = mergeType === 'investment_web' || mergeType === 'investment_scam'
             ? "BS Investment Scam"
             : "BS Money Laundering"
-        
+
         const scam_type = mergeType === 'investment_scam' || mergeType === 'investment_web'
             ? (excelRow?.category || '')
             : ""
@@ -574,63 +577,57 @@ document.getElementById('updateButton').addEventListener('click', handleUpdateDB
 
 async function handleUpdateDB() {
     const fileInput = document.getElementById('websiteExcelFile');
-    const collection = document.getElementById('collectionSelect').value;
+    const collection = "originWebsite";   // your combined table
 
     if (!fileInput.files[0]) {
         alert('Please select a file first!');
         return;
     }
 
-    // Read file as array buffer
+    // Read file
     const data = await fileInput.files[0].arrayBuffer();
     const workbook = XLSX.read(data, { type: 'array' });
     const firstSheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[firstSheetName];
     const rows = XLSX.utils.sheet_to_json(sheet);
 
-    // 1. Fetch all existing URLs from Supabase table, for fast duplicate check
+    // Fetch all existing URLs
     let allExisting = [];
     let start = 0, batchSize = 1000, hasMore = true;
+
     while (hasMore) {
         const { data, error } = await supabase
             .from(collection)
             .select('url')
             .range(start, start + batchSize - 1);
-        if (error) { alert('Error fetching existing data'); return; }
+
+        if (error) {
+            alert('Error fetching existing data');
+            return;
+        }
+
         if (data) allExisting = allExisting.concat(data);
         hasMore = (data && data.length === batchSize);
         start += batchSize;
     }
 
-    const existingUrlsSet = new Set(allExisting.map(item => normalize(item.url)));
+    const existingUrlsSet = new Set(allExisting.map(item => normalize(item.Website)));
 
-    // 2. Format for DB, and filter out duplicates
-    let formattedRows;
-    if (collection === "originWebsite") {
-        formattedRows = rows
-            .filter(row => !existingUrlsSet.has(normalize(row.url)))
-            .map(row => ({
-                url: String(row.url).trim(),
-                origin: String(row.origin).trim()
-            }));
-    } else if (collection === "categoryWebsite") {
-        formattedRows = rows
-            .filter(row => !existingUrlsSet.has(normalize(row.url)))
-            .map(row => ({
-                url: String(row.url).trim(),
-                category: String(row.category).trim()
-            }));
-    } else {
-        alert('Unknown table selected');
-        return;
-    }
+    // Prepare rows (common table)
+    const formattedRows = rows
+        .filter(row => row.Website && !existingUrlsSet.has(normalize(row.Website)))
+        .map(row => ({
+            url: String(row.Website).trim(),
+            origin: row.Origin ? String(row.Origin).trim() : null,
+            Category: row.Category ? String(row.Category).trim() : null
+        }));
 
     if (formattedRows.length === 0) {
         alert('All URLs already exist! No new unique rows to import.');
         return;
     }
 
-    // 3. Insert to Supabase
+    // Insert to Supabase
     const { error } = await supabase.from(collection).insert(formattedRows);
 
     if (error) {
@@ -640,6 +637,7 @@ async function handleUpdateDB() {
         fileInput.value = '';
     }
 }
+
 
 function showImportHeaders() {
     const collection = document.getElementById("collectionSelect").value;
