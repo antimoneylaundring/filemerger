@@ -69,7 +69,7 @@ body {
     display: flex;
     align-items: center;
     /* background: #E6C6FC; Soft purple like in your image */
-    padding: 0 30px;
+    padding: 0 100px 0px 30px;
     border-radius: 8px;
     /* width: fit-content; */
 }
