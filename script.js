@@ -1,4 +1,7 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+console.log("script.js loaded!");
+// import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const { createClient } = window.supabase;
 
 const supabaseUrl = 'https://sofdpqvxgekluqxakjao.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvZmRwcXZ4Z2VrbHVxeGFramFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3MzQ5ODQsImV4cCI6MjA3NzMxMDk4NH0.r7dg0ubQQe6is7C-W0hH0-F7XP8uS7TJVQXsP2GZ5qQ';
@@ -499,8 +502,6 @@ async function previewData() {
     return true;
 }
 
-window.handleMergeDownload = handleMergeDownload;
-
 function displayPreview(data) {
     const container = document.getElementById("previewContainer");
     container.innerHTML = "";
@@ -635,7 +636,7 @@ async function handleUpdateDB() {
             origin: row.Origin ? String(row.Origin).trim() : null,
             Category: row.Category ? String(row.Category).trim() : null
         }));
-    
+
     console.log("Rows to insert in DB:", formattedRows.length);
 
     if (formattedRows.length === 0) {
@@ -656,7 +657,10 @@ async function handleUpdateDB() {
     }
 }
 
+window.handleMergeDownload = handleMergeDownload;
+
 async function handleMergeDownload() {
+    console.log("handleMergeDownload triggered");
     showProgressBar(); // SHOW BAR as soon as merge starts!
     try {
         const button = document.getElementById('mergeDownloadBtn');
@@ -681,6 +685,9 @@ async function handleMergeDownload() {
     }
 }
 
+// document.getElementById('mergeDownloadBtn').addEventListener('click', handleMergeDownload);
+
+// document.getElementById("mergeDownloadBtn").addEventListener("click", () => console.log("Button clicked"));
 
 function showProgressBar() {
     document.getElementById("top-progress-bar").style.display = "block";
@@ -688,7 +695,6 @@ function showProgressBar() {
 function hideProgressBar() {
     document.getElementById("top-progress-bar").style.display = "none";
 }
-
 
 // Load the static JSON once when the page loads
 loadStaticJson();
