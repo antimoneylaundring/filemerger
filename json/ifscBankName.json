@@ -1051,6 +1051,10 @@
         {
             "ifsc_code": "SURY",
             "bank_name": "Suryoday Small Finance Bank"
+        },
+        {
+            "ifsc_code": "UNBA",
+            "bank_name": "Unity Small finance Bank Limited"
         }
     ]
 }
