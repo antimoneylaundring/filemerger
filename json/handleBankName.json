@@ -1975,6 +1975,10 @@
         {
             "Handle": "indusind",
             "Bank_name": "Kotak Mahindra Bank"
+        },
+        {
+            "Handle": "mbkns",
+            "Bank_name": "Bank Of Baroda"
         }
     ]
 }

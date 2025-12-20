@@ -286,7 +286,7 @@ async function previewData() {
             // handle cases like "abc@bank" or odd spaces; produce null if no valid handle
             const upiHandle = upiRaw.includes('@')
                 ? upiRaw.split('@').slice(1).join('@').toLowerCase().trim()
-                : null;
+                : 'NA';
 
             const ifscRaw = String(excelRow?.ifsc_code ?? '').trim();
             const ifscCode = (ifscRaw && ifscRaw !== 'NA')
@@ -301,7 +301,7 @@ async function previewData() {
                 console.log('No matching bank found for IFSC or UPI handle.');
             }
         } else if (mergeType === 'credit_netbanking') {
-            bankName = excelRow?.bank_name || '';
+            bankName = excelRow?.bank_name || 'NA';
         }
 
         const upiType = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam' || mergeType === 'investment_web'
