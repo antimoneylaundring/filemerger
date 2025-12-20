@@ -252,28 +252,53 @@ async function previewData() {
 
         const npci_mfilterit = [mfilterit, npciUrl, without_header].filter(Boolean).join(',');
 
-        let bankName = "NA";
+        let bankName = "";
 
         let upiHandle = 'NA';
         let ifscCode = 'NA';
 
-        if (mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam' || mergeType === 'investment_web') {
-            upiHandle = excelRow?.upi_vpa && String(excelRow.upi_vpa).includes('@')
-                ? String(excelRow.upi_vpa).split('@')[1].toLowerCase()
-                : 'NA';
+        // if (mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam' || mergeType === 'investment_web') {
+        //     upiHandle = excelRow?.upi_vpa && String(excelRow.upi_vpa).includes('@')
+        //         ? String(excelRow.upi_vpa).split('@')[1].toLowerCase()
+        //         : 'NA';
+        //         console.log("UPI Handle:", upiHandle);
 
-            // Extract IFSC code
-            ifscCode = excelRow?.ifsc_code && excelRow.ifsc_code !== 'NA'
-                ? excelRow.ifsc_code.trim().substring(0, 4).toUpperCase()
+        //     // Extract IFSC code
+        //     ifscCode = excelRow?.ifsc_code && excelRow.ifsc_code !== 'NA'
+        //         ? excelRow.ifsc_code.trim().substring(0, 4).toUpperCase()
+        //         : null;
+
+        //     // Prioritize IFSC-based bank lookup if IFSC code exists
+        //     if (ifscCode && ifscToBankMap[ifscCode]) {
+        //         bankName = ifscToBankMap[ifscCode];
+        //     }
+        //     // Fallback to UPI handle-based lookup if no valid IFSC code
+        //     else if (upiHandle && handleToBankMap[upiHandle]) {
+        //         bankName = handleToBankMap[upiHandle];
+        //         console.log("Bank Name from UPI Handle:", bankName);
+        //     }
+        // } else if (mergeType === 'credit_netbanking') {
+        //     bankName = excelRow?.bank_name || '';
+        // }
+
+        if (['upi', 'telegram', 'investment_scam', 'investment_web'].includes(mergeType)) {
+            const upiRaw = String(excelRow?.upi_vpa ?? '').trim();
+            // handle cases like "abc@bank" or odd spaces; produce null if no valid handle
+            const upiHandle = upiRaw.includes('@')
+                ? upiRaw.split('@').slice(1).join('@').toLowerCase().trim()
                 : null;
 
-            // Prioritize IFSC-based bank lookup if IFSC code exists
+            const ifscRaw = String(excelRow?.ifsc_code ?? '').trim();
+            const ifscCode = (ifscRaw && ifscRaw !== 'NA')
+                ? ifscRaw.substring(0, 4).toUpperCase()
+                : null;
+
             if (ifscCode && ifscToBankMap[ifscCode]) {
                 bankName = ifscToBankMap[ifscCode];
-            }
-            // Fallback to UPI handle-based lookup if no valid IFSC code
-            else if (upiHandle && handleToBankMap[upiHandle]) {
+            } else if (upiHandle && handleToBankMap[upiHandle]) {
                 bankName = handleToBankMap[upiHandle];
+            } else {
+                console.log('No matching bank found for IFSC or UPI handle.');
             }
         } else if (mergeType === 'credit_netbanking') {
             bankName = excelRow?.bank_name || '';
