@@ -282,10 +282,8 @@ async function previewData() {
         // }
 
         if (['upi', 'telegram', 'investment_scam', 'investment_web'].includes(mergeType)) {
-            const upiRaw = String(excelRow?.upi_vpa ?? '').trim();
-            // handle cases like "abc@bank" or odd spaces; produce null if no valid handle
-            const upiHandle = upiRaw.includes('@')
-                ? upiRaw.split('@').slice(1).join('@').toLowerCase().trim()
+            upiHandle = excelRow?.upi_vpa && String(excelRow.upi_vpa).includes('@')
+                ? String(excelRow.upi_vpa).split('@')[1].toLowerCase()
                 : 'NA';
 
             const ifscRaw = String(excelRow?.ifsc_code ?? '').trim();
