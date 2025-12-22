@@ -300,6 +300,8 @@ async function previewData() {
             }
         } else if (mergeType === 'credit_netbanking') {
             bankName = excelRow?.bank_name || 'NA';
+        }else {
+            bankName = 'NA';
         }
 
         const upiType = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam' || mergeType === 'investment_web'
