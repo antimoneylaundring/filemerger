@@ -1055,6 +1055,15 @@
         {
             "ifsc_code": "UNBA",
             "bank_name": "Unity Small finance Bank Limited"
+        },
+        {
+            "ifsc_code": "TGRB",
+            "bank_name": "TELANGANA GRAMEENA BANK"
+        },
+        {
+            "ifsc_code": "APGB",
+            "bank_name": "ANDHRA PRAGATHI GRAMEENA BANK"
         }
+
     ]
 }
