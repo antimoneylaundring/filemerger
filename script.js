@@ -252,7 +252,7 @@ async function previewData() {
 
         const npci_mfilterit = [mfilterit, npciUrl, without_header].filter(Boolean).join(',');
 
-        let bankName = "";
+        let bankName = "NA";
 
         let upiHandle = 'NA';
         let ifscCode = 'NA';
@@ -300,8 +300,6 @@ async function previewData() {
             }
         } else if (mergeType === 'credit_netbanking') {
             bankName = excelRow?.bank_name || 'NA';
-        }else {
-            bankName = 'NA';
         }
 
         const upiType = mergeType === 'upi' || mergeType === 'telegram' || mergeType === 'investment_scam' || mergeType === 'investment_web'
