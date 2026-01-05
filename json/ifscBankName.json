@@ -21,12 +21,16 @@
             "bank_name": "Bandhan Bank"
         },
         {
-            "ifsc_code": "BARB",
+            "ifsc_code": "barb",
             "bank_name": "Bank of Baroda"
         },
         {
             "ifsc_code": "BKID",
             "bank_name": "Bank of India"
+        },
+        {
+            "ifsc_code": "CNRB",
+            "bank_name": "Canara Bank"
         },
         {
             "ifsc_code": "CSBK",
@@ -46,7 +50,7 @@
         },
         {
             "ifsc_code": "DBSS",
-            "bank_name": "Development Bank of Singapore"
+            "bank_name": "Devlopment Bank of Singapore"
         },
         {
             "ifsc_code": "DCBL",
@@ -66,7 +70,7 @@
         },
         {
             "ifsc_code": "ESMF",
-            "bank_name": "ESAF Small Finance Bank"
+            "bank_name": "Esaf Small Finance Bank"
         },
         {
             "ifsc_code": "FINO",
@@ -125,12 +129,20 @@
             "bank_name": "Karnataka Bank"
         },
         {
+            "ifsc_code": "KVBL",
+            "bank_name": "Karur Vysya Bank"
+        },
+        {
             "ifsc_code": "KKBK",
-            "bank_name": "Kotak Mahindra Bank"
+            "bank_name": "Kotak Mahindra Bank"
         },
         {
             "ifsc_code": "LAVB",
             "bank_name": "Lakshmi Vilas Bank"
+        },
+        {
+            "ifsc_code": "MAHB",
+            "bank_name": "Bank of Maharashtra"
         },
         {
             "ifsc_code": "ORBC",
@@ -138,7 +150,7 @@
         },
         {
             "ifsc_code": "PYTM",
-            "bank_name": "Paytm Payments Bank"
+            "bank_name": "One97 Communication"
         },
         {
             "ifsc_code": "PUNB",
@@ -162,7 +174,7 @@
         },
         {
             "ifsc_code": "SMCB",
-            "bank_name": "Shivalik Bank "
+            "bank_name": "Shivalik Small Finance Bank"
         },
         {
             "ifsc_code": "SIBL",
@@ -310,7 +322,7 @@
         },
         {
             "ifsc_code": "CRLY",
-            "bank_name": "Credit Agricole Corporate and Investment Bank"
+            "bank_name": "Crédit Agricole Corporate and Investment Bank"
         },
         {
             "ifsc_code": "CRES",
@@ -661,7 +673,11 @@
             "bank_name": "Surat National Co-op Bank"
         },
         {
-            "ifsc_code": "SUTC",
+            "ifsc_code": "SURY",
+            "bank_name": "Suryoday Small Finance Bank"
+        },
+        {
+            "ifsc_code": "SUTB",
             "bank_name": "Sutex Co-op Bank"
         },
         {
@@ -685,7 +701,7 @@
             "bank_name": "Akola-Washim District Central Bank Co-operative"
         },
         {
-            "ifsc_code": "YES",
+            "ifsc_code": "TAUB",
             "bank_name": "Akola Urban Co-Op Bank"
         },
         {
@@ -729,7 +745,7 @@
             "bank_name": "Karad Urban Co-operative Bank"
         },
         {
-            "ifsc_code": "KSCA",
+            "ifsc_code": "KSCB",
             "bank_name": "Karnataka State Co-Operative Apex Bank"
         },
         {
@@ -953,117 +969,40 @@
             "bank_name": "West Bengal State Co-operative Bank"
         },
         {
-            "ifsc_code": "NA",
-            "bank_name": "OmniCard"
-        },
-        {
             "ifsc_code": "FDRL",
             "bank_name": "Federal Bank"
-        },
-        {
-            "ifsc_code": "NA",
-            "bank_name": "Garagepreneurs Internet Private"
-        },
-        {
-            "ifsc_code": "NA",
-            "bank_name": "FamPay"
         },
         {
             "ifsc_code": "TMSB",
             "bank_name": "The Malad Sahakari Bank"
         },
         {
-            "ifsc_code": "ALX0",
-            "bank_name": "NA"
-        },
-        {
-            "ifsc_code": "NA",
-            "bank_name": "Amazon Pay"
-        },
-        {
-            "ifsc_code": "NA",
-            "bank_name": "Spice Pay"
-        },
-        {
-            "ifsc_code": "NA",
-            "bank_name": "Dhani"
-        },
-        {
-            "ifsc_code": "NA",
-            "bank_name": "Bajaj Finserv"
-        },
-        {
-            "ifsc_code": "NA",
-            "bank_name": "CheQ"
-        },
-        {
-            "ifsc_code": "NA",
-            "bank_name": "Fave"
-        },
-        {
-            "ifsc_code": "NA",
-            "bank_name": "MobiKwik"
-        },
-        {
-            "ifsc_code": "NA",
-            "bank_name": "DigiKhata"
-        },
-        {
-            "ifsc_code": "NA",
-            "bank_name": "Oxymoney"
-        },
-        {
-            "ifsc_code": "NA",
-            "bank_name": "QuikWallet"
-        },
-        {
-            "ifsc_code": "NA",
-            "bank_name": "Unimoni India"
-        },
-        {
-            "ifsc_code": "CNRB",
-            "bank_name": "Canara Bank"
-        },
-        {
-            "ifsc_code": "CANRB",
-            "bank_name": "Canara Bank"
-        },
-        {
-            "ifsc_code": "KVBL",
-            "bank_name": "Karur Vysya Bank"
-        },
-        {
-            "ifsc_code": "KVB0",
-            "bank_name": "Karur Vysya Bank"
+            "ifsc_code": "SGBA",
+            "bank_name": "Saurashtra Gramin Bank"
         },
         {
             "ifsc_code": "MAHG",
-            "bank_name": "Bank of Maharashtra"
+            "bank_name": "Maharashtra Gramin Bank"
         },
         {
-            "ifsc_code": "MAHB",
-            "bank_name": "Bank of Maharashtra"
+            "ifsc_code": "ADBK",
+            "bank_name": "Adarsh Co-Op Urban Bank"
         },
         {
-            "ifsc_code": "SUTB",
-            "bank_name": "Suryoday Small Finance Bank"
-        },
-        {
-            "ifsc_code": "SURY",
-            "bank_name": "Suryoday Small Finance Bank"
-        },
-        {
-            "ifsc_code": "UNBA",
-            "bank_name": "Unity Small finance Bank Limited"
+            "ifsc_code": "APBL",
+            "bank_name": "Andhra Pradesh State Coop Bank"
         },
         {
             "ifsc_code": "TGRB",
-            "bank_name": "TELANGANA GRAMEENA BANK"
+            "bank_name": "Telangana Grameena Bank"
+        },
+        {
+            "ifsc_code": "AMDN",
+            "bank_name": "Ahmednagar Merchants Co-Op Bank Ltd"
         },
         {
             "ifsc_code": "APGB",
-            "bank_name": "ANDHRA PRAGATHI GRAMEENA BANK"
+            "bank_name": "Andhra Pragathi Grameena Bank"
         }
-
     ]
 }
