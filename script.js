@@ -340,7 +340,9 @@ async function previewData() {
                         return foundKey ? originCategoryMap[foundKey].origin : 'NA';
                     })()
                 )
-                : "NA";
+                : (mergeType==="telegram")
+                    ? "India"
+                    : "NA";
 
         const categoryMap_Inevst_scam = {
             "t.me": "Telegram",
