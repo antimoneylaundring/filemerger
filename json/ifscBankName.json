@@ -1003,6 +1003,10 @@
         {
             "ifsc_code": "APGB",
             "bank_name": "Andhra Pragathi Grameena Bank"
+        },
+        {
+            "ifsc_code": "UNBA",
+            "bank_name": "Unity Small Finance Bank Limited"
         }
     ]
 }
