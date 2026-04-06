@@ -24,7 +24,7 @@
             "screenshot_case_report_link": "NA",
             "payment_gateway_intermediate_url": "NA",
             "neft_imps": "NA",
-            "transaction_method": "Pay",
+            "transaction_method": "NA",
             "scam_type": "",
             "ifsc_code": "NA",
             "bank_branch_details": "NA",
